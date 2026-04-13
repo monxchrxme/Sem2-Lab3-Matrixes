@@ -6,6 +6,7 @@ add_executable(run_tests
         test_vector.cpp
         test_diagonal_matrix.cpp
         test_triangular_matrix.cpp
+        test_system_of_equations.cpp
 )
 
 # Самая важная магия линковки:

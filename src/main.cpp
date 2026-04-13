@@ -5,6 +5,7 @@
 #include <random>
 #include <stdexcept>
 #include <chrono>
+#include <type_traits> // Для генерации случайных чисел в зависимости от типа
 
 //#include "lab2/sequences/array_sequence.hpp"
 #include "lab2/sequences/mutable_array_sequence.hpp"
@@ -17,8 +18,9 @@
 #include "algebra/diagonal_matrix.hpp"
 #include "algebra/system_of_equations.hpp"
 #include "algebra/matrix_vector_io.hpp"
+#include "types/complex.hpp"
 
-using T = double;
+template <typename T>
 using Seq = MutableArraySequence<IMatrix<T>*>;
 
 // ===================================================================
@@ -50,8 +52,9 @@ static int read_int(const std::string& prompt) {
     }
 }
 
-static double read_double(const std::string& prompt) {
-    double val;
+template <typename T>
+static T read_value(const std::string& prompt) {
+    T val;
     for (;;) {
         std::cout << prompt;
 
@@ -70,7 +73,8 @@ static double read_double(const std::string& prompt) {
     }
 }
 
-static int read_valid_idx(const Seq& seq) {
+template <typename T>
+static int read_valid_idx(const Seq<T>& seq) {
     for (;;) {
         int idx = read_int(" Matrix index: ");
         if (idx >= 0 && idx < seq.get_length()) {
@@ -80,10 +84,20 @@ static int read_valid_idx(const Seq& seq) {
     }
 }
 
+template <typename T>
+static T generate_random(std::mt19937& rng, std::uniform_real_distribution<double>& dist) {
+    if constexpr (std::is_same_v<T, double>) {
+        return dist(rng);
+    } else {
+        return T(dist(rng), dist(rng));
+    }
+}
+
 // ===================================================================
 // Matrix Utilities
 // ===================================================================
 
+template <typename T>
 static const char* matrix_type_name(const IMatrix<T>* m) {
     if (dynamic_cast<const DiagonalMatrix<T>*>(m))   return "Diagonal  ";
     if (dynamic_cast<const TriangularMatrix<T>*>(m)) return "Triangular";
@@ -92,7 +106,8 @@ static const char* matrix_type_name(const IMatrix<T>* m) {
     return "Unknown   ";
 }
 
-static void show_all(const Seq& seq) {
+template <typename T>
+static void show_all(const Seq<T>& seq) {
     if (seq.get_length() == 0) {
         std::cout << " (empty)\n";
         return;
@@ -107,11 +122,12 @@ static void show_all(const Seq& seq) {
     }
 }
 
+template <typename T>
 static void fill_manually(IMatrix<T>* m) {
     std::cout << " Enter elements row by row:\n";
     for (int i = 0; i < m->get_rows(); i++) {
         for (int j = 0; j < m->get_cols(); j++) {
-            double v = read_double(" [" + std::to_string(i) + "][" + std::to_string(j) + "] = ");
+            T v = read_value<T>(" [" + std::to_string(i) + "][" + std::to_string(j) + "] = ");
             try {
                 m->set(i, j, v);
             }
@@ -125,19 +141,21 @@ static void fill_manually(IMatrix<T>* m) {
     }
 }
 
+template <typename T>
 static void fill_randomly(IMatrix<T>* m, unsigned seed) {
     std::mt19937 rng(seed);
     std::uniform_real_distribution<double> dist(-10.0, 10.0);
     for (int i = 0; i < m->get_rows(); i++) {
         for (int j = 0; j < m->get_cols(); j++) {
             try {
-                m->set(i, j, dist(rng));
+                m->set(i, j, generate_random<T>(rng, dist));
             }
             catch (...) {} // Ignore write attempts outside the structure of diagonal/triangular matrices
         }
     }
 }
 
+template <typename T>
 static IMatrix<T>* create_matrix() {
     std::cout << "\n Matrix type:\n"
               << "  1. Matrix (rectangular dense)\n"
@@ -175,7 +193,8 @@ static IMatrix<T>* create_matrix() {
     return m;
 }
 
-static void matrix_ops(Seq& seq, int idx) {
+template <typename T>
+static void matrix_ops(Seq<T>& seq, int idx) {
     for (;;) {
         IMatrix<T>* m = seq.get(idx);
         std::cout << "\n--- Matrix [" << idx << "] "
@@ -211,7 +230,7 @@ static void matrix_ops(Seq& seq, int idx) {
             case 3: {
                 int i = read_int(" Row i: ");
                 int j = read_int(" Col j: ");
-                double v = read_double(" Value: ");
+                T v = read_value<T>(" Value: ");
                 try {
                     m->set(i, j, v);
                     std::cout << " Done.\n";
@@ -237,7 +256,7 @@ static void matrix_ops(Seq& seq, int idx) {
                 break;
             }
             case 6: {
-                double sc = read_double(" Scalar: ");
+                T sc = read_value<T>(" Scalar: ");
                 try {
                     IMatrix<T>* res = m->mult_scalar(sc);
                     seq.append(res);
@@ -265,7 +284,8 @@ static void matrix_ops(Seq& seq, int idx) {
     }
 }
 
-static void run_matrix_menu(Seq& seq) {
+template <typename T>
+static void run_matrix_menu(Seq<T>& seq) {
     for (;;) {
         std::cout << "\n=== Matrixes (" << seq.get_length() << " stored) ===\n"
                   << " 1. Show all\n"
@@ -282,7 +302,7 @@ static void run_matrix_menu(Seq& seq) {
                 show_all(seq);
                 break;
             case 2: {
-                IMatrix<T>* m = create_matrix();
+                IMatrix<T>* m = create_matrix<T>();
                 if (m) {
                     seq.append(m);
                     std::cout << " Saved.\n";
@@ -322,6 +342,7 @@ static void run_matrix_menu(Seq& seq) {
 // Solving Systems of Linear Equations and Experiments
 // ===================================================================
 
+template <typename T>
 static void print_solution(const Vector<T>& x, int n) {
     for (int i = 0; i < n; i++) {
         std::cout << " x[" << i << "] = "
@@ -329,6 +350,7 @@ static void print_solution(const Vector<T>& x, int n) {
     }
 }
 
+template <typename T>
 static void run_soe_work() {
     int n = read_int("\n Number of equations n: ");
     if (n <= 0) {
@@ -351,16 +373,16 @@ static void run_soe_work() {
     } else {
         SquareMatrix<T> A(n);
         Vector<T> b(n);
-        std::cout << " Enter matrix A:\n";
+        std::cout << " Enter matrix A: (if Complex Type use format (a, b))\n";
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                double val = read_double(" A[" + std::to_string(i) + "][" + std::to_string(j) + "] = ");
+                T val = read_value<T>(" A[" + std::to_string(i) + "][" + std::to_string(j) + "] = ");
                 A.set(i, j, val);
             }
         }
         std::cout << " Enter vector b:\n";
         for (int i = 0; i < n; i++) {
-            double val = read_double(" b[" + std::to_string(i) + "] = ");
+            T val = read_value<T>(" b[" + std::to_string(i) + "] = ");
             b.set(i, val);
         }
         soe = new SystemOfEquations<T>(A, b);
@@ -371,12 +393,12 @@ static void run_soe_work() {
 
     for (;;) {
         std::cout << "\n--- SOE (" << n << "x" << n << ") ---\n"
-                << " 1. Solve - Naive Gauss\n"
-                << " 2. Solve - Gauss + pivot\n"
-                << " 3. Solve - Pure LU (No pivot)\n"
-                << " 4. Solve - PLU (Advanced)\n"
-                << " 5. Print system\n"
-                << " 0. Back\n";
+                  << " 1. Solve - Naive Gauss\n"
+                  << " 2. Solve - Gauss + pivot\n"
+                  << " 3. Solve - Pure LU (No pivot)\n"
+                  << " 4. Solve - PLU (Advanced)\n"
+                  << " 5. Print system\n"
+                  << " 0. Back\n";
 
         int op = read_int(" Choice: ");
         if (op == 0) break;
@@ -412,6 +434,7 @@ static void run_soe_work() {
 using Clock = std::chrono::high_resolution_clock;
 using Ms    = std::chrono::duration<double, std::milli>;
 
+template <typename T>
 static void experiment_4_1() {
     const int sizes[] = {100, 200, 500};
     const unsigned seed = 67;
@@ -461,6 +484,7 @@ static void experiment_4_1() {
     }
 }
 
+template <typename T>
 static void experiment_4_2() {
     const int n = 250;
     const int ks[] = {1, 10, 50};
@@ -479,7 +503,7 @@ static void experiment_4_2() {
     for (int i = 0; i < 50; i++) {
         Vector<T> v(n);
         for (int j = 0; j < n; j++) {
-            v.set(j, dist(rng));
+            v.set(j, generate_random<T>(rng, dist));
         }
         rhs.append(v);
     }
@@ -508,6 +532,7 @@ static void experiment_4_2() {
     }
 }
 
+template <typename T>
 static void experiment_4_3(double tol) {
     const int sizes[] = {5, 10, 15};
 
@@ -522,7 +547,9 @@ static void experiment_4_3(double tol) {
 
         SystemOfEquations<T> soe = SystemOfEquations<T>::hilbert(n);
         Vector<T> exact(n);
-        for (int i = 0; i < n; i++) exact.set(i, 1.0);
+        for (int i = 0; i < n; i++) {
+            exact.set(i, T(1.0));
+        }
 
         const char* names[] = {"Gauss", "Gauss+pivot", "Pure LU", "PLU"};
         for (int m = 0; m < 4; m++) {
@@ -546,14 +573,31 @@ static void experiment_4_3(double tol) {
     }
 }
 
+template <typename T>
 static void run_experiments() {
     std::cout << "\n=== Running all experiments ===\n";
-    try { experiment_4_1(); } catch (const std::exception& e) { std::cout << "[!] Exp 4.1: " << e.what() << "\n"; }
-    try { experiment_4_2(); } catch (const std::exception& e) { std::cout << "[!] Exp 4.2: " << e.what() << "\n"; }
-    try { experiment_4_3(1e-14); } catch (const std::exception& e) { std::cout << "[!] Exp 4.3: " << e.what() << "\n"; }
+    try {
+        experiment_4_1<T>();
+    }
+    catch (const std::exception& e) {
+        std::cout << "[!] Exp 4.1: " << e.what() << "\n";
+    }
+    try {
+        experiment_4_2<T>();
+    }
+    catch (const std::exception& e) {
+        std::cout << "[!] Exp 4.2: " << e.what() << "\n";
+    }
+    try {
+        experiment_4_3<T>(1e-14);
+    }
+    catch (const std::exception& e) {
+        std::cout << "[!] Exp 4.3: " << e.what() << "\n";
+    }
     std::cout << "=== Done ===\n";
 }
 
+template <typename T>
 static void run_soe_menu() {
     for (;;) {
         std::cout << "\n=== System of Linear Equations ===\n"
@@ -563,14 +607,15 @@ static void run_soe_menu() {
         int c = read_int("Choice: ");
         if (c == 0) return;
 
-        if      (c == 1) run_soe_work();
-        else if (c == 2) run_experiments();
+        if      (c == 1) run_soe_work<T>();
+        else if (c == 2) run_experiments<T>();
         else std::cout << " [!] Unknown command.\n";
     }
 }
 
-int main() {
-    Seq matrixes;
+template <typename T>
+static void run_app() {
+    Seq<T> matrixes;
 
     for (;;) {
         std::cout << "\n==============================\n"
@@ -578,17 +623,34 @@ int main() {
                   << "==============================\n"
                   << " 1. Matrixes\n"
                   << " 2. System of Linear Equations\n"
-                  << " 0. Exit\n";
+                  << " 0. Back to Data Type Selection\n";
 
         int c = read_int("Choice: ");
         if      (c == 0) break;
-        else if (c == 1) run_matrix_menu(matrixes);
-        else if (c == 2) run_soe_menu();
+        else if (c == 1) run_matrix_menu<T>(matrixes);
+        else if (c == 2) run_soe_menu<T>();
         else std::cout << " [!] Unknown command.\n";
     }
 
     for (int i = 0; i < matrixes.get_length(); i++) {
         delete matrixes.get(i);
+    }
+}
+
+int main() {
+    for (;;) {
+        std::cout << "\n==============================\n"
+                  << "      CHOOSE DATA TYPE\n"
+                  << "==============================\n"
+                  << " 1. Real numbers (double)\n"
+                  << " 2. Complex numbers (Complex)\n"
+                  << " 0. Exit\n";
+
+        int c = read_int("Choice: ");
+        if      (c == 0) break;
+        else if (c == 1) run_app<double>();
+        else if (c == 2) run_app<Complex<double>>();
+        else std::cout << " [!] Unknown command.\n";
     }
 
     return 0;

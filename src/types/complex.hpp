@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <stdexcept>
+#include <iostream>
 
 template <typename T>
 struct Complex {
@@ -104,6 +105,40 @@ Complex<T> operator*(const T& scalar, const Complex<T>& c) {
 template <typename T>
 Complex<T> operator/(const T& scalar, const Complex<T>& c) {
     return Complex<T>(scalar) / c;
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const Complex<T>& c) {
+    os << "(" << c.re << ", " << c.im << ")";
+    return os;
+}
+
+template <typename T>
+std::istream& operator>>(std::istream& is, Complex<T>& c) {
+    T re = T{}, im = T{};
+    char ch = 0;
+
+    is >> ch;
+    if (ch == '(') {
+        is >> re >> ch;
+        if (ch == ',') {
+            is >> im >> ch;
+        } else if (ch == ')') {
+            im = T{};
+        } else {
+            is.setstate(std::ios_base::failbit);
+        }
+    } else {
+        is.putback(ch);
+        is >> re;
+        im = T{};
+    }
+
+    if (is) {
+        c.re = re;
+        c.im = im;
+    }
+    return is;
 }
 
 // testing utility (Floating-Point Comparison)

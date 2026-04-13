@@ -24,8 +24,8 @@ public:
     Vector<T>& operator=(Vector<T>&& other) noexcept = default;
 
     // getters
-    int get_size() const;
-    const T& get(int index) const;
+    [[nodiscard]] int get_size() const;
+    [[nodiscard]] const T& get(int index) const;
     void set(int index, const T& value);
 
     // Overloading the [] operator

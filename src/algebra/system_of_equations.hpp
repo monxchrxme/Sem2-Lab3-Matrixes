@@ -31,7 +31,9 @@ public:
     Vector<T> solve_gauss(double tol = DEFAULT_TOL) const;
     // 2. Gauss with partial pivoting
     Vector<T> solve_gauss_with_pivot(double tol = DEFAULT_TOL) const;
-    // 3. Solution via PLU Decomposition (with Caching)
+    // 3. Naive LU Decomposition (Without Permutations)
+    Vector<T> solve_lu(double tol = DEFAULT_TOL) const;
+    // 4. Solution via PLU Decomposition (with Caching)
     Vector<T> solve_plu(double tol = DEFAULT_TOL) const;
 
     // For testing

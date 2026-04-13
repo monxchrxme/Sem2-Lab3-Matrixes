@@ -144,6 +144,49 @@ Vector<T> SystemOfEquations<T>::solve_gauss_with_pivot(double tol) const {
     return x;
 }
 
+// Naive LU
+template <typename T>
+Vector<T> SystemOfEquations<T>::solve_lu(double tol) const {
+    int n = get_size();
+    TriangularMatrix<T> L_tmp(n, TriangleType::Lower);
+    SquareMatrix<T> U_tmp = A;
+
+    for (int i = 0; i < n; ++i) L_tmp.set(i, i, T(1));
+
+    for (int k = 0; k < n - 1; ++k) {
+        if (static_cast<double>(custom_math::abs(U_tmp.get(k, k))) <= tol) {
+            throw std::runtime_error("Pure LU: Zero pivot encountered. Matrix requires PLU with pivoting.");
+        }
+        for (int i = k + 1; i < n; ++i) {
+            T factor = U_tmp.get(i, k) / U_tmp.get(k, k);
+            L_tmp.set(i, k, factor);
+
+            for (int j = k; j < n; ++j) {
+                U_tmp.set(i, j, U_tmp.get(i, j) - factor * U_tmp.get(k, j));
+            }
+        }
+    }
+    if (static_cast<double>(custom_math::abs(U_tmp.get(n - 1, n - 1))) <= tol) {
+        throw std::runtime_error("Pure LU: Matrix is singular");
+    }
+
+    Vector<T> y(n);
+    for (int i = 0; i < n; ++i) {
+        T sum = T{};
+        for (int j = 0; j < i; ++j) sum = sum + L_tmp.get(i, j) * y[j];
+        y.set(i, (b.get(i) - sum) / L_tmp.get(i, i));
+    }
+
+    Vector<T> x(n);
+    for (int i = n - 1; i >= 0; --i) {
+        T sum = T{};
+        for (int j = i + 1; j < n; ++j) sum = sum + U_tmp.get(i, j) * x[j];
+        x.set(i, (y[i] - sum) / U_tmp.get(i, i));
+    }
+
+    return x;
+}
+
 // PLU decomposition
 template <typename T>
 void SystemOfEquations<T>::decompose_plu(double tol) const {

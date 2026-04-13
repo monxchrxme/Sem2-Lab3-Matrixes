@@ -371,20 +371,21 @@ static void run_soe_work() {
 
     for (;;) {
         std::cout << "\n--- SOE (" << n << "x" << n << ") ---\n"
-                  << " 1. Solve - Naive Gauss\n"
-                  << " 2. Solve - Gauss + pivot\n"
-                  << " 3. Solve - PLU\n"
-                  << " 4. Print system\n"
-                  << " 0. Back\n";
+                << " 1. Solve - Naive Gauss\n"
+                << " 2. Solve - Gauss + pivot\n"
+                << " 3. Solve - Pure LU (No pivot)\n"
+                << " 4. Solve - PLU (Advanced)\n"
+                << " 5. Print system\n"
+                << " 0. Back\n";
 
         int op = read_int(" Choice: ");
         if (op == 0) break;
-        if (op == 4) {
+        if (op == 5) {
             std::cout << "Matrix A:\n" << soe->get_matrix();
             std::cout << "Vector b:\n" << soe->get_rhs() << "\n";
             continue;
         }
-        if (op < 1 || op > 3) {
+        if (op < 1 || op > 4) {
             std::cout << " [!] Unknown command.\n";
             continue;
         }
@@ -393,6 +394,7 @@ static void run_soe_work() {
             Vector<T> x;
             if      (op == 1) x = soe->solve_gauss();
             else if (op == 2) x = soe->solve_gauss_with_pivot();
+            else if (op == 3) x = soe->solve_lu();
             else              x = soe->solve_plu();
 
             std::cout << " Solution:\n";
@@ -416,11 +418,12 @@ static void experiment_4_1() {
 
     std::cout << "\n--- Experiment 4.1: Time for one system (seed=" << seed << ") ---\n";
     std::cout << std::setw(6)  << "n"
-              << std::setw(14) << "Gauss (ms)"
-              << std::setw(18) << "Gauss+piv (ms)"
-              << std::setw(18) << "PLU decomp (ms)"
-              << std::setw(18) << "PLU subst (ms)"
-              << "\n" << std::string(74, '-') << "\n";
+              << std::setw(12) << "Gauss"
+              << std::setw(12) << "G+pivot"
+              << std::setw(12) << "Pure LU"
+              << std::setw(16) << "PLU decomp"
+              << std::setw(14) << "PLU subst"
+              << "\n" << std::string(72, '-') << "\n";
 
     for (int n : sizes) {
         SystemOfEquations<T> soe = SystemOfEquations<T>::random(n, seed);
@@ -434,6 +437,11 @@ static void experiment_4_1() {
         Vector<T> x_piv = soe.solve_gauss_with_pivot();
         double t_pivot = Ms(Clock::now() - t0).count();
 
+        soe = SystemOfEquations<T>::random(n, seed);
+        t0  = Clock::now();
+        Vector<T> x_lu = soe.solve_lu();
+        double t_lu = Ms(Clock::now() - t0).count();
+
         SystemOfEquations<T> soe_plu = SystemOfEquations<T>::random(n, seed);
         t0 = Clock::now();
         Vector<T> x_full = soe_plu.solve_plu();
@@ -444,10 +452,11 @@ static void experiment_4_1() {
         double t_subst = Ms(Clock::now() - t0).count();
 
         std::cout << std::setw(6)  << n
-                  << std::setw(14) << std::fixed << std::setprecision(2) << t_gauss
-                  << std::setw(18) << t_pivot
-                  << std::setw(18) << (t_full - t_subst)
-                  << std::setw(18) << t_subst
+                  << std::setw(12) << std::fixed << std::setprecision(2) << t_gauss
+                  << std::setw(12) << t_pivot
+                  << std::setw(12) << t_lu
+                  << std::setw(16) << (t_full - t_subst)
+                  << std::setw(14) << t_subst
                   << "\n";
     }
 }
@@ -515,12 +524,13 @@ static void experiment_4_3(double tol) {
         Vector<T> exact(n);
         for (int i = 0; i < n; i++) exact.set(i, 1.0);
 
-        const char* names[] = {"Gauss", "Gauss+pivot", "PLU"};
-        for (int m = 0; m < 3; m++) {
+        const char* names[] = {"Gauss", "Gauss+pivot", "Pure LU", "PLU"};
+        for (int m = 0; m < 4; m++) {
             try {
                 Vector<T> x;
                 if      (m == 0) x = soe.solve_gauss();
                 else if (m == 1) x = soe.solve_gauss_with_pivot(tol);
+                else if (m == 2) x = soe.solve_lu(tol);
                 else             x = soe.solve_plu(tol);
 
                 std::cout << " " << std::setw(14) << names[m]

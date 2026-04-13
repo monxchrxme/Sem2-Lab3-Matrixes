@@ -9,12 +9,16 @@ Vector<T>::Vector() : m_data() {}
 
 template <typename T>
 Vector<T>::Vector(int size) : m_data(size) {
-    if (size < 0) throw std::invalid_argument("Vector size cannot be negative");
+    if (size < 0) {
+        throw std::invalid_argument("Vector size cannot be negative");
+    }
 }
 
 template <typename T>
 Vector<T>::Vector(int size, const T& fill_value) : m_data(size) {
-    if (size < 0) throw std::invalid_argument("Vector size cannot be negative");
+    if (size < 0) {
+        throw std::invalid_argument("Vector size cannot be negative");
+    }
     for (int i = 0; i < size; ++i) {
         m_data.set(i, fill_value);
     }
@@ -22,7 +26,9 @@ Vector<T>::Vector(int size, const T& fill_value) : m_data(size) {
 
 template <typename T>
 Vector<T>::Vector(T* items, int count) : m_data(items, count) {
-    if (count < 0) throw std::invalid_argument("Vector size cannot be negative");
+    if (count < 0) {
+        throw std::invalid_argument("Vector size cannot be negative");
+    }
 }
 
 // getters

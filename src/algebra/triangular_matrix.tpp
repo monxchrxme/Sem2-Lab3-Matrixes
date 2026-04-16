@@ -15,7 +15,9 @@ TriangularMatrix<T>::TriangularMatrix(int size, TriangleType type) :
     m_data(size * (size + 1) / 2),
     m_size(size),
     m_type(type) {
-    if (size < 0) throw std::invalid_argument("Size cannot be negative");
+    if (size < 0) {
+        throw std::invalid_argument("Size cannot be negative");
+    }
 }
 
 template <typename T>
@@ -23,7 +25,9 @@ TriangularMatrix<T>::TriangularMatrix(int size, const T& fill_value, TriangleTyp
     m_data(size * (size + 1) / 2),
     m_size(size),
     m_type(type) {
-    if (size < 0) throw std::invalid_argument("Size cannot be negative");
+    if (size < 0) {
+        throw std::invalid_argument("Size cannot be negative");
+    }
     for (int i = 0; i < m_data.get_size(); ++i) {
         m_data.set(i, fill_value);
     }
@@ -32,11 +36,10 @@ TriangularMatrix<T>::TriangularMatrix(int size, const T& fill_value, TriangleTyp
 // Movement (As on Diagonal)
 
 template <typename T>
-TriangularMatrix<T>::TriangularMatrix(TriangularMatrix<T>&& other) noexcept
-        : m_data(std::move(other.m_data)),
-          m_size(other.m_size),
-          m_type(other.m_type)
-{
+TriangularMatrix<T>::TriangularMatrix(TriangularMatrix<T>&& other) noexcept :
+    m_data(std::move(other.m_data)),
+    m_size(other.m_size),
+    m_type(other.m_type) {
     other.m_size = 0;
 }
 
@@ -54,16 +57,24 @@ TriangularMatrix<T>& TriangularMatrix<T>::operator=(TriangularMatrix<T>&& other)
 // getters
 
 template <typename T>
-int TriangularMatrix<T>::get_rows() const { return m_size; }
+int TriangularMatrix<T>::get_rows() const {
+    return m_size;
+}
 
 template <typename T>
-int TriangularMatrix<T>::get_cols() const { return m_size; }
+int TriangularMatrix<T>::get_cols() const {
+    return m_size;
+}
 
 template <typename T>
-int TriangularMatrix<T>::get_size() const { return m_size; }
+int TriangularMatrix<T>::get_size() const {
+    return m_size;
+}
 
 template <typename T>
-TriangleType TriangularMatrix<T>::get_type() const { return m_type; }
+TriangleType TriangularMatrix<T>::get_type() const {
+    return m_type;
+}
 
 // Access to elements
 
@@ -76,7 +87,6 @@ const T& TriangularMatrix<T>::get(int i, int j) const {
     if (!in_structure(i, j)) {
         return ZERO; // If in the zero zone, return our fast constant
     }
-
     return m_data.get(flat_index(i, j));
 }
 
@@ -92,7 +102,6 @@ void TriangularMatrix<T>::set(int i, int j, const T& value) {
         }
         return; // Ignore writing zero to the zero zone
     }
-
     m_data.set(flat_index(i, j), value);
 }
 
@@ -195,7 +204,7 @@ bool TriangularMatrix<T>::in_structure(int i, int j) const noexcept {
 
 template <typename T>
 int TriangularMatrix<T>::flat_index(int i, int j) const noexcept {
-    // We are implementing your unified formula: x*(x+1)/2 + y
+    // implementing our unified formula: x*(x+1)/2 + y
     if (m_type == TriangleType::Lower) {
         return i * (i + 1) / 2 + j;
     } else {

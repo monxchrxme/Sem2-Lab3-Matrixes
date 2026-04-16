@@ -4,18 +4,26 @@
 // Constructors
 
 template <typename T>
-DiagonalMatrix<T>::DiagonalMatrix() : m_data(), m_size(0) {}
+DiagonalMatrix<T>::DiagonalMatrix() :
+    m_data(),
+    m_size(0) {}
 
 template <typename T>
-DiagonalMatrix<T>::DiagonalMatrix(int size) : m_data(size), m_size(size) {
-    if (size < 0) throw std::invalid_argument("DiagonalMatrix: size cannot be negative");
+DiagonalMatrix<T>::DiagonalMatrix(int size) :
+    m_data(size),
+    m_size(size) {
+    if (size < 0) {
+        throw std::invalid_argument("DiagonalMatrix: size cannot be negative");
+    }
 }
 
 template <typename T>
 DiagonalMatrix<T>::DiagonalMatrix(int size, const T& fill_value) :
     m_data(size),
     m_size(size) {
-    if (size < 0) throw std::invalid_argument("DiagonalMatrix: size cannot be negative");
+    if (size < 0) {
+        throw std::invalid_argument("DiagonalMatrix: size cannot be negative");
+    }
     for (int i = 0; i < size; ++i) {
         m_data.set(i, fill_value);
     }
@@ -23,17 +31,19 @@ DiagonalMatrix<T>::DiagonalMatrix(int size, const T& fill_value) :
 
 template <typename T>
 DiagonalMatrix<T>::DiagonalMatrix(T* diag_items, int size) :
-        m_data(diag_items, size),
-        m_size(size) {
-    if (size < 0) throw std::invalid_argument("DiagonalMatrix: size cannot be negative");
+    m_data(diag_items, size),
+    m_size(size) {
+    if (size < 0) {
+        throw std::invalid_argument("DiagonalMatrix: size cannot be negative");
+    }
 }
 
 // move-semantics
 
 template <typename T>
 DiagonalMatrix<T>::DiagonalMatrix(DiagonalMatrix<T>&& other) noexcept :
-        m_data(std::move(other.m_data)),
-        m_size(other.m_size) {
+    m_data(std::move(other.m_data)),
+    m_size(other.m_size) {
     other.m_size = 0;
 }
 
@@ -51,13 +61,19 @@ DiagonalMatrix<T>& DiagonalMatrix<T>::operator=(DiagonalMatrix<T>&& other) noexc
 // getters
 
 template <typename T>
-int DiagonalMatrix<T>::get_rows() const { return m_size; }
+int DiagonalMatrix<T>::get_rows() const {
+    return m_size;
+}
 
 template <typename T>
-int DiagonalMatrix<T>::get_cols() const { return m_size; }
+int DiagonalMatrix<T>::get_cols() const {
+    return m_size;
+}
 
 template <typename T>
-int DiagonalMatrix<T>::get_size() const { return m_size; }
+int DiagonalMatrix<T>::get_size() const {
+    return m_size;
+}
 
 template <typename T>
 const T& DiagonalMatrix<T>::get(int i, int j) const {

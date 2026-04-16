@@ -55,7 +55,8 @@ Matrix<T>::Matrix(T* items, int rows, int cols) :
 
 // Move Semantics (Moving)
 
-// use std::move to force the DynamicArray class to use its move constructor rather than its copy constructor
+// use std::move to force the DynamicArray class to
+// use its move constructor rather than its copy constructor
 template <typename T>
 Matrix<T>::Matrix(Matrix<T>&& other) noexcept :
     m_data(std::move(other.m_data)),
@@ -216,7 +217,9 @@ void Matrix<T>::row_operation(int target_row, int source_row, const T& factor) {
 
 template <typename T>
 void Matrix<T>::scale_row(int row, const T& factor) {
-    if (row < 0 || row >= m_rows) throw IndexOutOfRange("scale_row: Index out of bounds");
+    if (row < 0 || row >= m_rows) {
+        throw IndexOutOfRange("scale_row: Index out of bounds");
+    }
     for (int j = 0; j < m_cols; ++j) {
         m_data.set(get_index(row, j), m_data.get(get_index(row, j)) * factor);
     }

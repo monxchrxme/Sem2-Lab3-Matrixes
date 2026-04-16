@@ -5,7 +5,7 @@
 #include <random>
 #include <stdexcept>
 #include <chrono>
-#include <type_traits> // Для генерации случайных чисел в зависимости от типа
+#include <type_traits> 
 
 //#include "lab2/sequences/array_sequence.hpp"
 #include "lab2/sequences/mutable_array_sequence.hpp"
@@ -436,7 +436,7 @@ using Ms    = std::chrono::duration<double, std::milli>;
 
 template <typename T>
 static void experiment_4_1() {
-    const int sizes[] = {100, 200, 500};
+    const int sizes[] = {100, 200, 500, 1000};
     const unsigned seed = 67;
 
     std::cout << "\n--- Experiment 4.1: Time for one system (seed=" << seed << ") ---\n";

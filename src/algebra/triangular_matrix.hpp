@@ -35,7 +35,6 @@ public:
     ~TriangularMatrix() override = default;
     TriangularMatrix(const TriangularMatrix<T>& other) = default;
     TriangularMatrix<T>& operator=(const TriangularMatrix<T>& other) = default;
-
     TriangularMatrix(TriangularMatrix<T>&& other) noexcept;
     TriangularMatrix<T>& operator=(TriangularMatrix<T>&& other) noexcept;
 

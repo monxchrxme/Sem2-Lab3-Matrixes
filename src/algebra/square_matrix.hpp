@@ -19,19 +19,19 @@ public:
     SquareMatrix<T>& operator=(const SquareMatrix<T>& other) = default;
     SquareMatrix<T>& operator=(SquareMatrix<T>&& other) noexcept = default;
 
-    // Specific Methods for Square Matrices
+    // Specific Methods for Square Matrixes
 
     // Convenient getter (since rows == cols)
     int get_size() const;
 
-    // Calculating the Trace of a Matrix (Sum of the Diagonal) — O(N)
+    // Calculating the Trace of a Matrix (Sum of the Diagonal)
     T trace() const;
 
     // Transposition (returns a new square matrix)
     SquareMatrix<T>* transpose() const;
 
     // Symmetry check (A[i][j] == A[j][i])
-    bool is_symmetric(double tol = 1e-9) const;
+    [[nodiscard]] bool is_symmetric(double tol = 1e-9) const;
 
     // Covariant Return for an Interface
     SquareMatrix<T>* clone() const override;

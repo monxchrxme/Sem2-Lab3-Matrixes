@@ -1,7 +1,7 @@
 #pragma once
 
 #include "imatrix.hpp"
-#include "square_matrix.hpp" // ПОДКЛЮЧАЕМ ДЛЯ ВОЗВРАЩАЕМЫХ ТИПОВ
+#include "square_matrix.hpp"
 #include "../lab2/memory/dynamic_array.hpp"
 #include "../lab2/types/exceptions.hpp"
 #include "../types/math.hpp"

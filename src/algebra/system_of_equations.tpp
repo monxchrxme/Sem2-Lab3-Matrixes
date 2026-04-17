@@ -151,7 +151,9 @@ Vector<T> SystemOfEquations<T>::solve_lu(double tol) const {
     TriangularMatrix<T> L_tmp(n, TriangleType::Lower);
     SquareMatrix<T> U_tmp = A;
 
-    for (int i = 0; i < n; ++i) L_tmp.set(i, i, T(1));
+    for (int i = 0; i < n; ++i) { 
+        L_tmp.set(i, i, T(1));
+    }
 
     for (int k = 0; k < n - 1; ++k) {
         if (static_cast<double>(custom_math::abs(U_tmp.get(k, k))) <= tol) {
@@ -173,7 +175,9 @@ Vector<T> SystemOfEquations<T>::solve_lu(double tol) const {
     Vector<T> y(n);
     for (int i = 0; i < n; ++i) {
         T sum = T{};
-        for (int j = 0; j < i; ++j) sum = sum + L_tmp.get(i, j) * y[j];
+        for (int j = 0; j < i; ++j) {
+            sum = sum + L_tmp.get(i, j) * y[j];
+        }
         y.set(i, (b.get(i) - sum) / L_tmp.get(i, i));
     }
 

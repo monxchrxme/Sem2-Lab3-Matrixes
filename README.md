@@ -50,7 +50,7 @@ cd build && ctest --output-on-failure                         # Запуск в�
 │   │   ├── square_matrix.hpp / .tpp
 │   │   ├── triangular_matrix.hpp / .tpp
 │   │   ├── system_of_equations.hpp / .tpp
-│   │   ├── sparse_matrix.hpp / .tpp //TODO: реализовать
+│   │   ├── sparse_matrix.hpp / .tpp //TODO: реализовать 
 │   │   └── matrix_vector_io.hpp
 │   ├── types/
 │   │   ├── complex.hpp
@@ -65,7 +65,7 @@ cd build && ctest --output-on-failure                         # Запуск в�
 │   ├── test_sparse_matrix.cpp
 │   ├── test_square_matrix.cpp
 │   ├── test_triangular_matrix.cpp
-│   ├── test_sparse_matrix.cpp //TODO: реализовать
+│   ├── test_sparse_matrix.cpp //TODO: реализовать 
 │   └── test_vector.cpp
 ├── .gitignore
 ├── CMakeLists.txt

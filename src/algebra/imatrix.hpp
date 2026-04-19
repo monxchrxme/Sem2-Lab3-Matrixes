@@ -20,11 +20,6 @@ public:
     // method get for polymorphic reading
     virtual const T& get(int i, int j) const = 0;
 
-    // access operator (only reading)
-    const T& operator()(int i, int j) const {
-        return get(i, j);
-    }
-
     // operations
     virtual void set(int i, int j, const T &value) = 0;
 

@@ -4,6 +4,7 @@ add_executable(run_tests
         test_matrix.cpp
         test_square_matrix.cpp
         test_vector.cpp
+        test_sparse_matrix.cpp
         test_diagonal_matrix.cpp
         test_triangular_matrix.cpp
         test_system_of_equations.cpp

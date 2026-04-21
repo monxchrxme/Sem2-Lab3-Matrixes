@@ -14,6 +14,7 @@
 #include "algebra/matrix.hpp"
 #include "algebra/square_matrix.hpp"
 #include "algebra/vector.hpp"
+#include "algebra/sparse_matrix.hpp"
 #include "algebra/triangular_matrix.hpp"
 #include "algebra/diagonal_matrix.hpp"
 #include "algebra/system_of_equations.hpp"
@@ -99,6 +100,7 @@ static T generate_random(std::mt19937& rng, std::uniform_real_distribution<doubl
 
 template <typename T>
 static const char* matrix_type_name(const IMatrix<T>* m) {
+    if (dynamic_cast<const SparseMatrix<T>*>(m))     return "Sparse    ";
     if (dynamic_cast<const DiagonalMatrix<T>*>(m))   return "Diagonal  ";
     if (dynamic_cast<const TriangularMatrix<T>*>(m)) return "Triangular";
     if (dynamic_cast<const SquareMatrix<T>*>(m))     return "Square    ";
@@ -159,21 +161,23 @@ template <typename T>
 static IMatrix<T>* create_matrix() {
     std::cout << "\n Matrix type:\n"
               << "  1. Matrix (rectangular dense)\n"
-              << "  2. SquareMatrix\n"
-              << "  3. DiagonalMatrix\n"
-              << "  4. TriangularMatrix Lower\n"
-              << "  5. TriangularMatrix Upper\n";
+              << "  2. SparseMatrix\n"
+              << "  3. SquareMatrix\n"
+              << "  4. DiagonalMatrix\n"
+              << "  5. TriangularMatrix Lower\n"
+              << "  6. TriangularMatrix Upper\n";
     int type = read_int(" Choice: ");
 
     IMatrix<T>* m = nullptr;
 
     try {
         switch (type) {
-            case 1: m = new Matrix<T>(read_int(" Rows: "), read_int(" Cols: ")); break;
-            case 2: m = new SquareMatrix<T>(read_int(" Size n: "));              break;
-            case 3: m = new DiagonalMatrix<T>(read_int(" Size n: "));            break;
-            case 4: m = new TriangularMatrix<T>(read_int(" Size n: "), TriangleType::Lower); break;
-            case 5: m = new TriangularMatrix<T>(read_int(" Size n: "), TriangleType::Upper); break;
+            case 1: m = new Matrix<T>(read_int(" Rows: "), read_int(" Cols: "));             break;
+            case 2: m = new SparseMatrix<T>(read_int(" Rows: "), read_int(" Cols: "));       break;
+            case 3: m = new SquareMatrix<T>(read_int(" Size n: "));                          break;
+            case 4: m = new DiagonalMatrix<T>(read_int(" Size n: "));                        break;
+            case 5: m = new TriangularMatrix<T>(read_int(" Size n: "), TriangleType::Lower); break;
+            case 6: m = new TriangularMatrix<T>(read_int(" Size n: "), TriangleType::Upper); break;
             default: std::cout << " [!] Unknown type.\n"; return nullptr;
         }
     } catch (const std::invalid_argument& e) {

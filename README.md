@@ -47,7 +47,7 @@ cd build && ctest --output-on-failure                         # Запуск в�
 │   │   ├── square_matrix.hpp / .tpp
 │   │   ├── triangular_matrix.hpp / .tpp
 │   │   ├── system_of_equations.hpp / .tpp
-│   │   ├── sparse_matrix.hpp / .tpp //TODO: реализовать 
+│   │   ├── sparse_matrix.hpp / .tpp 
 │   │   └── matrix_vector_io.hpp
 │   ├── types/
 │   │   ├── complex.hpp
@@ -62,7 +62,7 @@ cd build && ctest --output-on-failure                         # Запуск в�
 │   ├── test_sparse_matrix.cpp
 │   ├── test_square_matrix.cpp
 │   ├── test_triangular_matrix.cpp
-│   ├── test_sparse_matrix.cpp //TODO: реализовать 
+│   ├── test_sparse_matrix.cpp 
 │   └── test_vector.cpp
 ├── .gitignore
 ├── CMakeLists.txt
@@ -89,11 +89,12 @@ cd build && ctest --output-on-failure                         # Запуск в�
 ### IMatrix<T>
 #### Схема наследования
 ```bash
-IMatrix<T>               ← Абстрактный базовый класс (интерфейс)
-   ├── Matrix<T>         ← Прямоугольная плотная матрица
-   │   ├── SquareMatrix<T> ← Квадратная матрица (rows == cols)
+IMatrix<T>           ← Абстрактный базовый класс (интерфейс)
+   ├── Matrix<T>     ← Прямоугольная плотная матрица
+   │   ├── SquareMatrix<T>  ← Квадратная матрица (rows == cols)
    ├── TriangularMatrix<T>  ← Оптимизированное хранение n*(n+1)/2 элементов
-   └── DiagonalMatrix<T>    ← Хранение только главной диагонали (n элементов)
+   ├── DiagonalMatrix<T>    ← Хранение только главной диагонали (n элементов)
+   └── SparseMatrix<T>      ← DynamicArray<Triplet>
 ```
 
 ### Защита целостности памяти (Отсутствие operator[][])

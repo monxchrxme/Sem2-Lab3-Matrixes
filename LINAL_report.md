@@ -122,8 +122,6 @@ $$|A_{pk}| = \max_{i \ge k} |A_{ik}|$$
 | 15 | Чистое LU                    |  [!] Exception: Zero pivot encountered. Matrix requires PLU  |       -     |
 | 15 | PLU-разложение               |   [!] Exception: Matrix is singular            |       -                   |
 
-//TODO: добавить QR-разложение может быть 
-
 ## 5. Выводы
 
 ### 5.1 Асимптотика и накладные расходы структур данных

@@ -220,7 +220,9 @@ void SystemOfEquations<T>::decompose_plu(double tol) const {
             U.swap_rows(k, p_row);
             int tp = P.get(k); P.set(k, P.get(p_row)); P.set(p_row, tp);
             for (int j = 0; j < k; ++j) {
-                T tl = L.get(k, j); L.set(k, j, L.get(p_row, j)); L.set(p_row, j, tl);
+                T tl = L.get(k, j); 
+                L.set(k, j, L.get(p_row, j)); 
+                L.set(p_row, j, tl);
             }
         }
         for (int i = k + 1; i < n; ++i) {

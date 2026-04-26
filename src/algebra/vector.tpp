@@ -107,6 +107,26 @@ T Vector<T>::dot(const Vector<T>& other) const {
 }
 
 template <typename T>
+Vector<T> Vector<T>::cross(const Vector<T>& other) const {
+    if (this->get_size() != 3 || other.get_size() != 3) {
+        throw std::invalid_argument("Vector::cross: Cross product is strictly defined only for 3D vectors.");
+    }
+
+    Vector<T> result(3);
+    
+    // Calculating coords (indexies 0=X, 1=Y, 2=Z)
+    T cx = this->get(1) * other.get(2) - this->get(2) * other.get(1);
+    T cy = this->get(2) * other.get(0) - this->get(0) * other.get(2);
+    T cz = this->get(0) * other.get(1) - this->get(1) * other.get(0);
+
+    result.set(0, cx);
+    result.set(1, cy);
+    result.set(2, cz);
+
+    return result;
+}
+
+template <typename T>
 double Vector<T>::norm() const {
     double sum = 0;
     for (int i = 0; i < get_size(); ++i) {

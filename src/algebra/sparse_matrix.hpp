@@ -9,7 +9,6 @@
 template <typename T>
 class SparseMatrix : public IMatrix<T> {
 private:
-    //TODO: сортировать не по значению а по строкам и столбцам, потому что по значению ничего не ускоряет при вызове get 
     struct Triplet {
         int row;
         int col;

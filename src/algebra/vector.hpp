@@ -39,12 +39,13 @@ public:
 
     // Scalar Product of Vectors (Dot Product)
     T dot(const Vector<T>& other) const;
+    // Cross Product for 3 Dimension Vectors (Cross Product)
+    Vector<T> cross(const Vector<T>& other) const;
 
     // Euclidean norm (vector length)
     double norm() const;
 };
-//TODO: можно использовать % для скалярного произведения 
-//TODO: добавить векторное произведение? 
+
 // Global operator for a scalar on the left (scalar * vector)
 template <typename T>
 Vector<T> operator*(const T& scalar, const Vector<T>& v);

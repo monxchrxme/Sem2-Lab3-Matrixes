@@ -31,11 +31,15 @@ public:
     // Overloading the [] operator
     const T& operator[](int index) const; // reading only: val = v[0]
 
-    //TODO: += *= штуки добавить для оптимизации
     // math operations
     Vector<T> operator+(const Vector<T>& other) const;
     Vector<T> operator-(const Vector<T>& other) const;
     Vector<T> operator*(const T& scalar) const;
+
+    // In-place operations
+    Vector<T>& operator+=(const Vector<T>& other);
+    Vector<T>& operator-=(const Vector<T>& other);
+    Vector<T>& operator*=(const T& scalar);
 
     // Scalar Product of Vectors (Dot Product)
     T dot(const Vector<T>& other) const;

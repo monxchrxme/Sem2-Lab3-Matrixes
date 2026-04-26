@@ -146,3 +146,77 @@ TEST(VectorTest, CopyAndMoveSemantics) {
     // object may depend on the specific implementation of DynamicArray. However, the crucial point is that no data is leaked
     EXPECT_EQ(original.get_size(), 0);
 }
+
+// In-place Operations Testing (+=, -=, *=)
+TEST(VectorTest, InPlaceMath) {
+    int d1[] = {1, 2, 3};
+    int d2[] = {4, 5, 6};
+    Vector<int> v1(d1, 3);
+    Vector<int> v2(d2, 3);
+
+    // Testing +=
+    v1 += v2;
+    EXPECT_EQ(v1[0], 5);
+    EXPECT_EQ(v1[1], 7);
+    EXPECT_EQ(v1[2], 9);
+
+    // Testing -=
+    v1 -= v2;
+    EXPECT_EQ(v1[0], 1);
+    EXPECT_EQ(v1[1], 2);
+    EXPECT_EQ(v1[2], 3);
+
+    // Testing *=
+    v1 *= 10;
+    EXPECT_EQ(v1[0], 10);
+    EXPECT_EQ(v1[1], 20);
+    EXPECT_EQ(v1[2], 30);
+
+    // Testing chaining 
+    v1 += v2; 
+    v1 -= v2; 
+    EXPECT_EQ(v1[0], 10); 
+    EXPECT_EQ(v1[1], 20);
+    EXPECT_EQ(v1[2], 30);
+
+    // Exception check for dimension mismatch
+    Vector<int> v_wrong(2);
+    EXPECT_THROW({ v1 += v_wrong; }, std::invalid_argument);
+    EXPECT_THROW({ v1 -= v_wrong; }, std::invalid_argument);
+}
+
+// NEW: Cross Product Testing (3D vectors only)
+TEST(VectorTest, CrossProduct) {
+    int di[] = {1, 0, 0};
+    int dj[] = {0, 1, 0};
+    Vector<int> i_vec(di, 3);
+    Vector<int> j_vec(dj, 3);
+
+    Vector<int> k_vec = i_vec.cross(j_vec);
+    EXPECT_EQ(k_vec.get_size(), 3);
+    EXPECT_EQ(k_vec[0], 0);
+    EXPECT_EQ(k_vec[1], 0);
+    EXPECT_EQ(k_vec[2], 1);
+
+    // (1, 2, 3) x (4, 5, 6) = (-3, 6, -3)
+    int da[] = {1, 2, 3};
+    int db[] = {4, 5, 6};
+    Vector<int> a(da, 3);
+    Vector<int> b(db, 3);
+    
+    Vector<int> c = a.cross(b);
+    EXPECT_EQ(c[0], -3);
+    EXPECT_EQ(c[1], 6);
+    EXPECT_EQ(c[2], -3);
+
+    Vector<int> c_rev = b.cross(a);
+    EXPECT_EQ(c_rev[0], 3);
+    EXPECT_EQ(c_rev[1], -6);
+    EXPECT_EQ(c_rev[2], 3);
+
+    Vector<int> v2(2);
+    Vector<int> v4(4);
+    EXPECT_THROW(a.cross(v2), std::invalid_argument);
+    EXPECT_THROW(v4.cross(a), std::invalid_argument);
+    EXPECT_THROW(v2.cross(v4), std::invalid_argument);
+}

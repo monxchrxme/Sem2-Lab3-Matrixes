@@ -63,35 +63,56 @@ const T& Vector<T>::operator[](int index) const {
 
 template <typename T>
 Vector<T> Vector<T>::operator+(const Vector<T>& other) const {
-    if (get_size() != other.get_size()) {
-        throw std::invalid_argument("Vector::operator+: Dimensions mismatch");
-    }
-    Vector<T> result(get_size());
-    for (int i = 0; i < get_size(); ++i) {
-        result.set(i, this->get(i) + other.get(i));
-    }
+    Vector<T> result(*this); 
+    result += other;     
+
     return result;
 }
 
 template <typename T>
 Vector<T> Vector<T>::operator-(const Vector<T>& other) const {
-    if (get_size() != other.get_size()) {
-        throw std::invalid_argument("Vector::operator-: Dimensions mismatch");
-    }
-    Vector<T> result(get_size());
-    for (int i = 0; i < get_size(); ++i) {
-        result.set(i, this->get(i) - other.get(i));
-    }
+    Vector<T> result(*this); 
+    result -= other;     
+        
     return result;
 }
 
 template <typename T>
 Vector<T> Vector<T>::operator*(const T& scalar) const {
-    Vector<T> result(get_size());
-    for (int i = 0; i < get_size(); ++i) {
-        result.set(i, this->get(i) * scalar);
-    }
+    Vector<T> result(*this); 
+    result *= scalar;     
+        
     return result;
+}
+
+template <typename T>
+Vector<T>& Vector<T>::operator+=(const Vector<T>& other) {
+    if (get_size() != other.get_size()) {
+        throw std::invalid_argument("Vector::operator+=: Dimensions mismatch");
+    }
+    for (int i = 0; i < get_size(); ++i) {
+        m_data.set(i, this->get(i) + other.get(i)); 
+    }
+    return *this; 
+}
+
+template <typename T>
+Vector<T>& Vector<T>::operator-=(const Vector<T>& other) {
+    if (get_size() != other.get_size()) {
+        throw std::invalid_argument("Vector::operator-=: Dimensions mismatch");
+    }
+    for (int i = 0; i < get_size(); ++i) {
+        m_data.set(i, this->get(i) - other.get(i));
+    }
+    return *this;
+}
+
+template <typename T>
+Vector<T>& Vector<T>::operator*=(const T& scalar) {
+    for (int i = 0; i < get_size(); ++i) {
+        m_data.set(i, this->get(i) * scalar);
+    }
+    return *this;
 }
 
 template <typename T>

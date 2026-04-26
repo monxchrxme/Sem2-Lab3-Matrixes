@@ -5,6 +5,11 @@
 
 template <typename T>
 class SquareMatrix : public Matrix<T> {
+private: 
+    //TODO: боремся с прямоугольностью для квадртаных матриц) 
+    [[nodiscard]] int get_rows() const override { return Matrix::get_rows(); }
+    [[nodiscard]] int get_cols() const override { return Matrix::get_cols(); }
+    
 public:
     // Constructors (strictly 1 size, to guarantee a square)
     SquareMatrix();

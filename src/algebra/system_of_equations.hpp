@@ -7,6 +7,7 @@
 #include "../types/math.hpp"
 #include <stdexcept>
 #include <random>
+//TODO: include которые не используются в hpp перенести в tpp 
 
 template <typename T>
 class SystemOfEquations {

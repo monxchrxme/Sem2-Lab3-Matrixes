@@ -31,6 +31,7 @@ public:
     // Overloading the [] operator
     const T& operator[](int index) const; // reading only: val = v[0]
 
+    //TODO: += *= штуки добавить для оптимизации
     // math operations
     Vector<T> operator+(const Vector<T>& other) const;
     Vector<T> operator-(const Vector<T>& other) const;
@@ -42,7 +43,7 @@ public:
     // Euclidean norm (vector length)
     double norm() const;
 };
-
+//TODO: можно использовать % для скалярного произведения
 // Global operator for a scalar on the left (scalar * vector)
 template <typename T>
 Vector<T> operator*(const T& scalar, const Vector<T>& v);

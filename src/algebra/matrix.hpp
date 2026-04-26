@@ -16,7 +16,8 @@ private:
 
     // auxiliary private methods (DRY)
     static int checked_size(int rows, int cols);
-    [[nodiscard]] bool in_bounds(int i, int j) const noexcept;
+    //TODO: можно переименовать на check_index для лучшего понимания 
+    [[nodiscard]] bool in_bounds(int i, int j) const noexcept; 
     [[nodiscard]] int get_index(int i, int j) const noexcept;
 
 public:
@@ -41,9 +42,11 @@ public:
 
     // covariant return types (returning Matrix* instead of IMatrix*)
     Matrix<T>* add(const IMatrix<T>& other) const override;
+    //TODO: можно не писать mult_scalar а оставить просто mult, перегрузка будет
     Matrix<T>* mult_scalar(const T& value) const override;
     Matrix<T>* mult(const IMatrix<T>& other) const override;
 
+    //TODO: добавить операторы именно математические
     // Matrix-vector multiplication (returns a new vector by value)
     Vector<T> operator*(const Vector<T>& v) const;
 

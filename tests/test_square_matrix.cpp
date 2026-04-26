@@ -131,3 +131,58 @@ TEST(SquareMatrixTest, CopyAndMoveSemantics) {
     EXPECT_EQ(moved.get(1, 1), 42);
     EXPECT_EQ(original.get_size(), 0);
 }
+
+// Overloaded Operators for SquareMatrix
+TEST(SquareMatrixTest, OperatorOverloading) {
+    int d1[] = {1, 2, 
+                3, 4};
+    int d2[] = {5, 6, 
+                7, 8};
+    SquareMatrix<int> sq1(d1, 2);
+    SquareMatrix<int> sq2(d2, 2);
+
+    // 1. In-place operators
+    sq1 += sq2;
+    EXPECT_EQ(sq1.get(0, 0), 6);
+    EXPECT_EQ(sq1.get(1, 1), 12);
+    sq1 -= sq2; 
+
+    // 2. Binary Operators (Type checking via compilation)
+    SquareMatrix<int> sum = sq1 + sq2;
+    EXPECT_EQ(sum.get(0, 0), 6);
+    
+    SquareMatrix<int> diff = sq1 - sq2;
+    EXPECT_EQ(diff.get(0, 1), -4);
+
+    SquareMatrix<int> scaled = sq1 * 10;
+    SquareMatrix<int> scaled_global = 10 * sq1;
+    EXPECT_EQ(scaled.get(1, 0), 30);
+    EXPECT_EQ(scaled_global.get(1, 0), 30);
+
+    // 3. Matrix Multiplication
+    SquareMatrix<int> prod = sq1 * sq2;
+    EXPECT_EQ(prod.get(0, 0), 19);
+    EXPECT_EQ(prod.get(1, 1), 50);
+
+    // 4. Exception check: Multiplying by a rectangular matrix
+    Matrix<int> rect(2, 3); // 2x3 matrix
+    EXPECT_THROW(sq1 * rect, std::invalid_argument); // could be result 2x3, but SquareMatrix
+}
+
+// Inherited Matrix-Vector Multiplication
+TEST(SquareMatrixTest, VectorMultiplication) {
+    int d1[] = {1, 2, 
+                3, 4};
+    SquareMatrix<int> sq(d1, 2);
+    
+    int v_data[] = {1, 1};
+    Vector<int> vec(v_data, 2);
+
+    // We didn't write operator* for vector in SquareMatrix, 
+    // it inherits from Matrix
+    Vector<int> res = sq * vec;
+    
+    EXPECT_EQ(res.get_size(), 2);
+    EXPECT_EQ(res[0], 3); // 1*1 + 2*1
+    EXPECT_EQ(res[1], 7); // 3*1 + 4*1
+}

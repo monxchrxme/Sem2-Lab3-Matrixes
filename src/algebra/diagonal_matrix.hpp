@@ -2,10 +2,14 @@
 
 #include "imatrix.hpp"
 #include "square_matrix.hpp"
+#include "vector.hpp"
 #include "../lab2/memory/dynamic_array.hpp"
 #include "../lab2/types/exceptions.hpp"
 #include "../types/math.hpp"
 #include <stdexcept>
+
+// Forward Declaration
+template <typename T> class Vector;
 
 template <typename T>
 class DiagonalMatrix : public IMatrix<T> {
@@ -40,11 +44,27 @@ public:
     DiagonalMatrix<T>* mult(const T& value) const override;
     SquareMatrix<T>* mult(const IMatrix<T>& other) const override;
 
+    // In-place math operations
+    // if the other has 0's out of diagonal - will be thrown an exception 
+    DiagonalMatrix<T>& operator+=(const IMatrix<T>& other);
+    DiagonalMatrix<T>& operator-=(const IMatrix<T>& other);
+    DiagonalMatrix<T>& operator*=(const T& scalar);
+
+    // math operations (could be 0's out of structure)
+    SquareMatrix<T> operator+(const IMatrix<T>& other) const;
+    SquareMatrix<T> operator-(const IMatrix<T>& other) const;
+    DiagonalMatrix<T> operator*(const T& scalar) const;
+    SquareMatrix<T> operator*(const IMatrix<T>& other) const;
+    Vector<T> operator*(const Vector<T>& v) const;
+
     double norm() const override;
     DiagonalMatrix<T>* clone() const override;
 
     T trace() const;
     T determinant() const;
 };
+
+template <typename T>
+DiagonalMatrix<T> operator*(const T& scalar, const DiagonalMatrix<T>& m);
 
 #include "diagonal_matrix.tpp"

@@ -6,6 +6,9 @@
 #include <stdexcept>
 #include <cmath>
 
+// Forward Declaration
+template <typename T> class Vector;
+
 template <typename T>
 class SparseMatrix : public IMatrix<T> {
 private:
@@ -44,6 +47,18 @@ public:
     SparseMatrix<T>* add(const IMatrix<T>& other) const override;
     SparseMatrix<T>* mult(const T& value) const override;
     SparseMatrix<T>* mult(const IMatrix<T>& other) const override;
+
+    // In-place math operations
+    SparseMatrix<T>& operator+=(const IMatrix<T>& other);
+    SparseMatrix<T>& operator-=(const IMatrix<T>& other);
+    SparseMatrix<T>& operator*=(const T& scalar);
+
+    // math operations
+    SparseMatrix<T> operator+(const IMatrix<T>& other) const;
+    SparseMatrix<T> operator-(const IMatrix<T>& other) const;
+    SparseMatrix<T> operator*(const T& scalar) const;
+    SparseMatrix<T> operator*(const IMatrix<T>& other) const;
+    Vector<T> operator*(const Vector<T>& v) const;
     
     bool check_index(int i, int j) const noexcept;
 
@@ -51,5 +66,8 @@ public:
         return m_data.get_size();
     }
 };
+
+template <typename T>
+SparseMatrix<T> operator*(const T& scalar, const SparseMatrix<T>& m);
 
 #include "sparse_matrix.tpp"

@@ -1,6 +1,7 @@
 #pragma once
-#include "triangular_matrix.hpp"
+
 #include "../types/math.hpp"
+#include "vector.hpp"
 
 // Constructors
 
@@ -149,6 +150,138 @@ SquareMatrix<T>* TriangularMatrix<T>::mult(const IMatrix<T>& other) const {
         }
     }
     return result;
+}
+
+template <typename T>
+TriangularMatrix<T>& TriangularMatrix<T>::operator+=(const IMatrix<T>& other) {
+    if (m_size != other.get_rows() || m_size != other.get_cols()) {
+        throw std::invalid_argument("TriangularMatrix::operator+=: Dimensions mismatch");
+    }
+
+    // FAST PATH: If the second matrix is ​​also triangular AND of the same type (Upper/Lower)
+    auto* tri_other = dynamic_cast<const TriangularMatrix<T>*>(&other);
+    if (tri_other && this->m_type == tri_other->get_type()) {
+        for (int i = 0; i < m_data.get_size(); ++i) {
+            m_data.set(i, m_data.get(i) + tri_other->m_data.get(i));
+        }
+    } 
+    // SLOW PATH: If the matrices are of different types, or the second one is Dense
+    else {
+        for (int i = 0; i < m_size; ++i) {
+            for (int j = 0; j < m_size; ++j) {
+                this->set(i, j, this->get(i, j) + other.get(i, j));
+            }
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+TriangularMatrix<T>& TriangularMatrix<T>::operator-=(const IMatrix<T>& other) {
+    if (m_size != other.get_rows() || m_size != other.get_cols()) {
+        throw std::invalid_argument("TriangularMatrix::operator-=: Dimensions mismatch");
+    }
+
+    auto* tri_other = dynamic_cast<const TriangularMatrix<T>*>(&other);
+    if (tri_other && this->m_type == tri_other->get_type()) {
+        for (int i = 0; i < m_data.get_size(); ++i) {
+            m_data.set(i, m_data.get(i) - tri_other->m_data.get(i));
+        }
+    } else {
+        for (int i = 0; i < m_size; ++i) {
+            for (int j = 0; j < m_size; ++j) {
+                this->set(i, j, this->get(i, j) - other.get(i, j));
+            }
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+TriangularMatrix<T>& TriangularMatrix<T>::operator*=(const T& scalar) {
+    for (int i = 0; i < m_data.get_size(); ++i) {
+        m_data.set(i, m_data.get(i) * scalar);
+    }
+    return *this;
+}
+
+template <typename T>
+SquareMatrix<T> TriangularMatrix<T>::operator+(const IMatrix<T>& other) const {
+    if (m_size != other.get_rows() || m_size != other.get_cols()) {
+        throw std::invalid_argument("TriangularMatrix::operator+: Dimensions mismatch");
+    }
+    SquareMatrix<T> result(m_size);
+    for (int i = 0; i < m_size; ++i) {
+        for (int j = 0; j < m_size; ++j) {
+            result.set(i, j, this->get(i, j) + other.get(i, j));
+        }
+    }
+    return result;
+}
+
+template <typename T>
+SquareMatrix<T> TriangularMatrix<T>::operator-(const IMatrix<T>& other) const {
+    if (m_size != other.get_rows() || m_size != other.get_cols()) {
+        throw std::invalid_argument("TriangularMatrix::operator-: Dimensions mismatch");
+    }
+    SquareMatrix<T> result(m_size);
+    for (int i = 0; i < m_size; ++i) {
+        for (int j = 0; j < m_size; ++j) {
+            result.set(i, j, this->get(i, j) - other.get(i, j));
+        }
+    }
+    return result;
+}
+
+template <typename T>
+TriangularMatrix<T> TriangularMatrix<T>::operator*(const T& scalar) const {
+    TriangularMatrix<T> result(*this);
+    result *= scalar;
+    return result;
+}
+
+template <typename T>
+SquareMatrix<T> TriangularMatrix<T>::operator*(const IMatrix<T>& other) const {
+    if (m_size != other.get_rows()) {
+        throw std::invalid_argument("TriangularMatrix::operator*: Inner dimensions must agree");
+    }
+    if (m_size != other.get_cols()) {
+        throw std::invalid_argument("TriangularMatrix::operator*: Result would not be a square matrix");
+    }
+
+    SquareMatrix<T> result(m_size, T{});
+
+    for (int i = 0; i < m_size; ++i) {
+        for (int k = 0; k < m_size; ++k) {
+            T temp = this->get(i, k);
+            if (temp == T{}) continue; 
+            for (int j = 0; j < m_size; ++j) {
+                result.set(i, j, result.get(i, j) + temp * other.get(k, j));
+            }
+        }
+    }
+    return result;
+}
+
+template <typename T>
+Vector<T> TriangularMatrix<T>::operator*(const Vector<T>& v) const {
+    if (m_size != v.get_size()) {
+        throw std::invalid_argument("TriangularMatrix-Vector multiplication: Dimensions mismatch");
+    }
+    Vector<T> result(m_size);
+    for (int i = 0; i < m_size; ++i) {
+        T sum = T{};
+        for (int j = 0; j < m_size; ++j) {
+            sum = sum + this->get(i, j) * v.get(j);
+        }
+        result.set(i, sum);
+    }
+    return result;
+}
+
+template <typename T>
+TriangularMatrix<T> operator*(const T& scalar, const TriangularMatrix<T>& m) {
+    return m * scalar;
 }
 
 template <typename T>

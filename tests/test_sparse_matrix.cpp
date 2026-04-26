@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "../src/algebra/sparse_matrix.hpp"
 #include "../src/types/complex.hpp" 
+#include "../src/algebra/vector.hpp"
 
 TEST(SparseMatrixTest, InitializationAndDimensions) {
     SparseMatrix<double> m(5, 10);
@@ -132,4 +133,57 @@ TEST(SparseMatrixTest, ComplexNumbersSupport) {
     EXPECT_DOUBLE_EQ(m.get(1, 1).im, 0.0);
 
     EXPECT_DOUBLE_EQ(m.norm(), 5.0);
+}
+
+TEST(SparseMatrixTest, InPlaceOperatorsAndOptimizations) {
+    SparseMatrix<double> m1(3, 3);
+    m1.set(0, 0, 10.0);
+    m1.set(2, 2, 20.0);
+
+    SparseMatrix<double> m2(3, 3);
+    m2.set(0, 0, 5.0);
+    m2.set(1, 1, 15.0);
+
+    // Sparse += Sparse (Fast Path)
+    m1 += m2;
+    EXPECT_DOUBLE_EQ(m1.get(0, 0), 15.0);
+    EXPECT_DOUBLE_EQ(m1.get(1, 1), 15.0);
+    EXPECT_DOUBLE_EQ(m1.get(2, 2), 20.0);
+    EXPECT_EQ(m1.get_non_zero_count(), 3);
+
+    // Scalar *=
+    m1 *= 2.0;
+    EXPECT_DOUBLE_EQ(m1.get(2, 2), 40.0);
+
+    // ZERO Optimization Check
+    m1 *= 0.0;
+    EXPECT_EQ(m1.get_non_zero_count(), 0); 
+}
+
+TEST(SparseMatrixTest, MultiplicationOperators) {
+    SparseMatrix<int> m1(2, 3);
+    m1.set(0, 1, 2);
+    m1.set(1, 2, 3);
+
+    SparseMatrix<int> m2(3, 2);
+    m2.set(1, 0, 4);
+    m2.set(2, 1, 5);
+
+    // Matrix * Matrix
+    SparseMatrix<int> prod = m1 * m2;
+    EXPECT_EQ(prod.get_rows(), 2);
+    EXPECT_EQ(prod.get_cols(), 2);
+    EXPECT_EQ(prod.get(0, 0), 8);  // 2 * 4
+    EXPECT_EQ(prod.get(1, 1), 15); // 3 * 5
+    EXPECT_EQ(prod.get(0, 1), 0);
+    EXPECT_EQ(prod.get_non_zero_count(), 2);
+
+    // SparseMatrix * Vector
+    int v_data[] = {10, 20, 30};
+    Vector<int> vec(v_data, 3);
+    
+    Vector<int> v_res = m1 * vec;
+    EXPECT_EQ(v_res.get_size(), 2);
+    EXPECT_EQ(v_res[0], 40); // 2 * 20 
+    EXPECT_EQ(v_res[1], 90); // 3 * 30 
 }

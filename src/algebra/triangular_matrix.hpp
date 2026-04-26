@@ -6,6 +6,9 @@
 #include "../lab2/types/exceptions.hpp"
 #include <stdexcept>
 
+// Forward Declaration
+template <typename T> class Vector;
+
 // Enumeration for Matrix Type
 enum class TriangleType {
     Lower, // Lower triangular (zeros above the diagonal)
@@ -53,11 +56,26 @@ public:
     TriangularMatrix<T>* mult(const T& value) const override;
     SquareMatrix<T>* mult(const IMatrix<T>& other) const override;
 
+    // In-place math operations
+    TriangularMatrix<T>& operator+=(const IMatrix<T>& other);
+    TriangularMatrix<T>& operator-=(const IMatrix<T>& other);
+    TriangularMatrix<T>& operator*=(const T& scalar);
+
+    // math operations
+    SquareMatrix<T> operator+(const IMatrix<T>& other) const;
+    SquareMatrix<T> operator-(const IMatrix<T>& other) const;
+    TriangularMatrix<T> operator*(const T& scalar) const;
+    SquareMatrix<T> operator*(const IMatrix<T>& other) const;
+    Vector<T> operator*(const Vector<T>& v) const;
+
     double norm() const override;
     TriangularMatrix<T>* clone() const override;
 
     T trace() const;
     T determinant() const;
 };
+
+template <typename T>
+TriangularMatrix<T> operator*(const T& scalar, const TriangularMatrix<T>& m);
 
 #include "triangular_matrix.tpp"

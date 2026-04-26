@@ -1,5 +1,4 @@
 #pragma once
-#include "matrix.hpp"
 #include "../types/math.hpp"
 #include "vector.hpp"
 
@@ -157,6 +156,61 @@ Matrix<T>* Matrix<T>::mult(const IMatrix<T>& other) const {
 }
 
 template <typename T>
+Matrix<T>& Matrix<T>::operator+=(const IMatrix<T>& other) {
+    if (m_rows != other.get_rows() || m_cols != other.get_cols()) {
+        throw std::invalid_argument("Matrix::operator+=: Dimensions mismatch");
+    }
+    for (int i = 0; i < m_rows; ++i) {
+        for (int j = 0; j < m_cols; ++j) {
+            this->set(i, j, this->get(i, j) + other.get(i, j));
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator-=(const IMatrix<T>& other) {
+    if (m_rows != other.get_rows() || m_cols != other.get_cols()) {
+        throw std::invalid_argument("Matrix::operator-=: Dimensions mismatch");
+    }
+    for (int i = 0; i < m_rows; ++i) {
+        for (int j = 0; j < m_cols; ++j) {
+            this->set(i, j, this->get(i, j) - other.get(i, j));
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+Matrix<T>& Matrix<T>::operator*=(const T& scalar) {
+    for (int i = 0; i < m_rows * m_cols; ++i) {
+        m_data.set(i, m_data.get(i) * scalar);
+    }
+    return *this;
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::operator+(const IMatrix<T>& other) const {
+    Matrix<T> result(*this); 
+    result += other;         
+    return result;           
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::operator-(const IMatrix<T>& other) const {
+    Matrix<T> result(*this);
+    result -= other;
+    return result;
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::operator*(const T& scalar) const {
+    Matrix<T> result(*this);
+    result *= scalar;
+    return result;
+}
+
+template <typename T>
 Vector<T> Matrix<T>::operator*(const Vector<T>& v) const {
     if (m_cols != v.get_size()) {
         throw std::invalid_argument("Matrix-Vector multiplication: Dimensions mismatch");
@@ -171,6 +225,30 @@ Vector<T> Matrix<T>::operator*(const Vector<T>& v) const {
         result.set(i, sum);
     }
     return result;
+}
+
+template <typename T>
+Matrix<T> Matrix<T>::operator*(const IMatrix<T>& other) const {
+    if (m_cols != other.get_rows()) {
+        throw std::invalid_argument("Matrix::operator*: Inner dimensions must agree");
+    }
+    int other_cols = other.get_cols();
+    Matrix<T> result(m_rows, other_cols, T{}); 
+
+    for (int i = 0; i < m_rows; ++i) {
+        for (int k = 0; k < m_cols; ++k) {
+            T temp = this->get(i, k);
+            for (int j = 0; j < other_cols; ++j) {
+                result.set(i, j, result.get(i, j) + temp * other.get(k, j));
+            }
+        }
+    }
+    return result;
+}
+
+template <typename T>
+Matrix<T> operator*(const T& scalar, const Matrix<T>& m) {
+    return m * scalar; 
 }
 
 template <typename T>

@@ -164,3 +164,71 @@ TEST(TriangularMatrixTest, CopyAndMove) {
 
     EXPECT_EQ(original.get_size(), 0);
 }
+
+// Overloaded Operators for TriangularMatrix
+TEST(TriangularMatrixTest, InPlaceOperators) {
+    TriangularMatrix<int> U1(3, TriangleType::Upper);
+    TriangularMatrix<int> U2(3, TriangleType::Upper);
+    
+    U1.set(0, 1, 5);
+    U2.set(0, 1, 10);
+
+    // Fast path: Upper += Upper
+    U1 += U2;
+    EXPECT_EQ(U1.get(0, 1), 15);
+
+    U1 -= U2;
+    EXPECT_EQ(U1.get(0, 1), 5);
+
+    U1 *= 3;
+    EXPECT_EQ(U1.get(0, 1), 15);
+
+    // Slow path check 1: Upper += Lower (Where Lower has non-zeros)
+    TriangularMatrix<int> L1(3, TriangleType::Lower);
+    L1.set(1, 0, 100);
+
+    EXPECT_THROW(U1 += L1, std::logic_error);
+
+    // Slow path check 2: Upper += Lower (Where Lower is effectively zero)
+    TriangularMatrix<int> L_zero(3, TriangleType::Lower);
+    EXPECT_NO_THROW(U1 += L_zero); 
+}
+
+TEST(TriangularMatrixTest, BinaryOperators) {
+    TriangularMatrix<int> U(2, TriangleType::Upper);
+    U.set(0, 0, 1); U.set(0, 1, 2); U.set(1, 1, 3);
+    // [1 2]
+    // [0 3]
+
+    TriangularMatrix<int> L(2, TriangleType::Lower);
+    L.set(0, 0, 4); L.set(1, 0, 5); L.set(1, 1, 6);
+    // [4 0]
+    // [5 6]
+
+    // Upper + Lower = SquareMatrix
+    SquareMatrix<int> sum = U + L;
+    EXPECT_EQ(sum.get(0, 0), 5); // 1 + 4
+    EXPECT_EQ(sum.get(0, 1), 2); // 2 + 0
+    EXPECT_EQ(sum.get(1, 0), 5); // 0 + 5
+    EXPECT_EQ(sum.get(1, 1), 9); // 3 + 6
+
+    // Scalar * Upper
+    TriangularMatrix<int> scaled = 10 * U;
+    EXPECT_EQ(scaled.get(0, 1), 20);
+    EXPECT_EQ(scaled.get_type(), TriangleType::Upper);
+
+    // Upper * Lower = SquareMatrix
+    SquareMatrix<int> prod = U * L;
+    // [1 2] * [4 0] = [14  12]
+    // [0 3]   [5 6]   [15  18]
+    EXPECT_EQ(prod.get(0, 0), 14); // 1*4 + 2*5 = 14
+    EXPECT_EQ(prod.get(1, 1), 18); // 0*0 + 3*6 = 18
+
+    // Triangular * Vector
+    int v_data[] = {10, 10};
+    Vector<int> vec(v_data, 2);
+    
+    Vector<int> v_res = U * vec;
+    EXPECT_EQ(v_res[0], 30); // 1*10 + 2*10 = 30
+    EXPECT_EQ(v_res[1], 30); // 0*10 + 3*10 = 30
+}

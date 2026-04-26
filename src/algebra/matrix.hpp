@@ -44,7 +44,17 @@ public:
     Matrix<T>* mult(const T& value) const override;            
     Matrix<T>* mult(const IMatrix<T>& other) const override;   
 
-    //TODO: добавить операторы именно математические
+    // math operations
+    Matrix<T> operator+(const IMatrix<T>& other) const;
+    Matrix<T> operator-(const IMatrix<T>& other) const;
+    Matrix<T> operator*(const T& scalar) const;
+    Matrix<T> operator*(const IMatrix<T>& other) const; // Matrix * Matrix
+
+    // In-place operations
+    Matrix<T>& operator+=(const IMatrix<T>& other);
+    Matrix<T>& operator-=(const IMatrix<T>& other);
+    Matrix<T>& operator*=(const T& scalar);
+
     // Matrix-vector multiplication (returns a new vector by value)
     Vector<T> operator*(const Vector<T>& v) const;
 
@@ -56,5 +66,9 @@ public:
     void row_operation(int target_row, int source_row, const T& factor);
     void scale_row(int row, const T& factor);
 };
+
+// global operator: Scalar * Matrix
+template <typename T>
+Matrix<T> operator*(const T& scalar, const Matrix<T>& m);
 
 #include "matrix.tpp"

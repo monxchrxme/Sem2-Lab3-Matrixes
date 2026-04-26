@@ -1,5 +1,4 @@
 #pragma once
-#include "square_matrix.hpp"
 
 // Constructors
 // We pass (size, size) to the parent constructor Matrix
@@ -119,4 +118,70 @@ SquareMatrix<T>* SquareMatrix<T>::mult(const IMatrix<T>& other) const {
         }
     }
     return result;
+}
+
+template <typename T>
+SquareMatrix<T>& SquareMatrix<T>::operator+=(const IMatrix<T>& other) {
+    Matrix<T>::operator+=(other); 
+    return *this;
+}
+
+template <typename T>
+SquareMatrix<T>& SquareMatrix<T>::operator-=(const IMatrix<T>& other) {
+    Matrix<T>::operator-=(other);
+    return *this;
+}
+
+template <typename T>
+SquareMatrix<T>& SquareMatrix<T>::operator*=(const T& scalar) {
+    Matrix<T>::operator*=(scalar);
+    return *this;
+}
+
+template <typename T>
+SquareMatrix<T> SquareMatrix<T>::operator+(const IMatrix<T>& other) const {
+    SquareMatrix<T> result(*this);
+    result += other;
+    return result;
+}
+
+template <typename T>
+SquareMatrix<T> SquareMatrix<T>::operator-(const IMatrix<T>& other) const {
+    SquareMatrix<T> result(*this);
+    result -= other;
+    return result;
+}
+
+template <typename T>
+SquareMatrix<T> SquareMatrix<T>::operator*(const T& scalar) const {
+    SquareMatrix<T> result(*this);
+    result *= scalar;
+    return result;
+}
+
+template <typename T>
+SquareMatrix<T> SquareMatrix<T>::operator*(const IMatrix<T>& other) const {
+    if (this->get_cols() != other.get_rows()) {
+        throw std::invalid_argument("SquareMatrix::operator*: Inner dimensions must agree");
+    }
+    if (other.get_cols() != this->get_size()) {
+        throw std::invalid_argument("SquareMatrix::operator*: Result would not be a square matrix");
+    }
+
+    int n = this->get_size();
+    SquareMatrix<T> result(n, T{});
+    for (int i = 0; i < n; ++i) {
+        for (int k = 0; k < n; ++k) {
+            T temp = this->get(i, k);
+            for (int j = 0; j < n; ++j) {
+                result.set(i, j, result.get(i, j) + temp * other.get(k, j));
+            }
+        }
+    }
+    return result;
+}
+
+template <typename T>
+SquareMatrix<T> operator*(const T& scalar, const SquareMatrix<T>& m) {
+    return m * scalar;
 }

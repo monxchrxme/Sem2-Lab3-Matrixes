@@ -1,5 +1,6 @@
-#include "sparse_matrix.hpp"
+#pragma once
 
+#include "vector.hpp"
 
 template <typename T>
 SparseMatrix<T>::SparseMatrix(int rows, int cols) : 
@@ -197,4 +198,132 @@ SparseMatrix<T>* SparseMatrix<T>::mult(const IMatrix<T>& other) const {
     }
     
     return result;
+}
+
+template <typename T>
+SparseMatrix<T>& SparseMatrix<T>::operator+=(const IMatrix<T>& other) {
+    if (m_rows != other.get_rows() || m_cols != other.get_cols()) {
+        throw std::invalid_argument("SparseMatrix::operator+=: Dimensions mismatch");
+    }
+
+    // FAST PATH: If the other matrix is ​​also sparse, iterate only over its non-zero elements
+    if (auto* sparse_other = dynamic_cast<const SparseMatrix<T>*>(&other)) {
+        for (int k = 0; k < sparse_other->m_data.get_size(); ++k) {
+            Triplet t = sparse_other->m_data.get(k);
+            this->set(t.row, t.col, this->get(t.row, t.col) + t.val);
+        }
+    } 
+    // SLOW PATH: Add dense matrix
+    else {
+        for (int i = 0; i < m_rows; ++i) {
+            for (int j = 0; j < m_cols; ++j) {
+                T val = other.get(i, j);
+                if (val != T{}) { 
+                    this->set(i, j, this->get(i, j) + val);
+                }
+            }
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+SparseMatrix<T>& SparseMatrix<T>::operator-=(const IMatrix<T>& other) {
+    if (m_rows != other.get_rows() || m_cols != other.get_cols()) {
+        throw std::invalid_argument("SparseMatrix::operator-=: Dimensions mismatch");
+    }
+
+    if (auto* sparse_other = dynamic_cast<const SparseMatrix<T>*>(&other)) {
+        for (int k = 0; k < sparse_other->m_data.get_size(); ++k) {
+            Triplet t = sparse_other->m_data.get(k);
+            this->set(t.row, t.col, this->get(t.row, t.col) - t.val);
+        }
+    } else {
+        for (int i = 0; i < m_rows; ++i) {
+            for (int j = 0; j < m_cols; ++j) {
+                T val = other.get(i, j);
+                if (val != T{}) {
+                    this->set(i, j, this->get(i, j) - val);
+                }
+            }
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+SparseMatrix<T>& SparseMatrix<T>::operator*=(const T& scalar) {
+    if (scalar == T{}) {
+        SparseMatrix<T> empty(m_rows, m_cols);
+        *this = std::move(empty); 
+        return *this;
+    }
+
+    for (int k = 0; k < m_data.get_size(); ++k) {
+        Triplet t = m_data.get(k);
+        t.val = t.val * scalar;
+        m_data.set(k, t);
+    }
+    return *this;
+}
+
+template <typename T>
+SparseMatrix<T> SparseMatrix<T>::operator+(const IMatrix<T>& other) const {
+    SparseMatrix<T> result(*this);
+    result += other;
+    return result;
+}
+
+template <typename T>
+SparseMatrix<T> SparseMatrix<T>::operator-(const IMatrix<T>& other) const {
+    SparseMatrix<T> result(*this);
+    result -= other;
+    return result;
+}
+
+template <typename T>
+SparseMatrix<T> SparseMatrix<T>::operator*(const T& scalar) const {
+    SparseMatrix<T> result(*this);
+    result *= scalar;
+    return result;
+}
+
+template <typename T>
+SparseMatrix<T> SparseMatrix<T>::operator*(const IMatrix<T>& other) const {
+    if (m_cols != other.get_rows()) {
+        throw std::invalid_argument("SparseMatrix::operator*: Inner dimensions must agree");
+    }
+    
+    int other_cols = other.get_cols();
+    SparseMatrix<T> result(m_rows, other_cols);
+
+    for (int k = 0; k < m_data.get_size(); ++k) {
+        Triplet t = m_data.get(k);
+        for (int j = 0; j < other_cols; ++j) {
+            T other_val = other.get(t.col, j);
+            if (other_val != T{}) { 
+                result.set(t.row, j, result.get(t.row, j) + t.val * other_val);
+            }
+        }
+    }
+    return result;
+}
+
+template <typename T>
+Vector<T> SparseMatrix<T>::operator*(const Vector<T>& v) const {
+    if (m_cols != v.get_size()) {
+        throw std::invalid_argument("SparseMatrix::operator*: Dimensions mismatch");
+    }
+    Vector<T> result(m_rows, T{}); 
+
+    for (int k = 0; k < m_data.get_size(); ++k) {
+        Triplet t = m_data.get(k);
+        result.set(t.row, result.get(t.row) + t.val * v.get(t.col));
+    }
+    return result;
+}
+
+template <typename T>
+SparseMatrix<T> operator*(const T& scalar, const SparseMatrix<T>& m) {
+    return m * scalar;
 }

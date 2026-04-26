@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "../src/algebra/diagonal_matrix.hpp"
 #include "../src/algebra/square_matrix.hpp"
+#include "../src/algebra/vector.hpp"
 #include "../src/types/complex.hpp"
 #include <stdexcept>
 #include <cmath>
@@ -128,4 +129,66 @@ TEST(DiagonalMatrixTest, CopyAndMove) {
     DiagonalMatrix<int> moved = std::move(original);
     EXPECT_EQ(moved.get(1, 1), 5);
     EXPECT_EQ(original.get_size(), 0);
+}
+
+// Overloaded Operators for DiagonalMatrix
+TEST(DiagonalMatrixTest, InPlaceOperators) {
+    int d1[] = {10, 20, 30};
+    int d2[] = {1, 2, 3};
+    DiagonalMatrix<int> diag1(d1, 3);
+    DiagonalMatrix<int> diag2(d2, 3);
+
+    // Fast path: Diagonal += Diagonal
+    diag1 += diag2;
+    EXPECT_EQ(diag1.get(0, 0), 11);
+    EXPECT_EQ(diag1.get(2, 2), 33);
+
+    diag1 -= diag2;
+    EXPECT_EQ(diag1.get(0, 0), 10);
+
+    diag1 *= 2;
+    EXPECT_EQ(diag1.get(1, 1), 40);
+
+    // Slow path check: Matrix with non-zeros off-diagonal
+    int dense_data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    SquareMatrix<int> dense(dense_data, 3);
+    
+    EXPECT_THROW(diag1 += dense, std::logic_error);
+
+    int pseudo_diag[] = {5, 0, 0,
+                         0, 5, 0,
+                         0, 0, 5};
+    SquareMatrix<int> dense_zeros(pseudo_diag, 3);
+    EXPECT_NO_THROW(diag1 += dense_zeros);
+}
+
+TEST(DiagonalMatrixTest, BinaryOperators) {
+    int d[] = {2, 3, 4};
+    DiagonalMatrix<int> D(d, 3);
+
+    int m[] = {1, 1, 1,
+               1, 1, 1,
+               1, 1, 1};
+    SquareMatrix<int> A(m, 3);
+
+    // Diagonal + Dense = SquareMatrix
+    SquareMatrix<int> sum = D + A;
+    EXPECT_EQ(sum.get(0, 0), 3); // 2 + 1
+    EXPECT_EQ(sum.get(0, 1), 1); // 0 + 1 
+
+    // Scalar * Diagonal
+    DiagonalMatrix<int> scaled = 5 * D;
+    EXPECT_EQ(scaled.get(2, 2), 20);
+
+    // Diagonal * Dense = SquareMatrix
+    SquareMatrix<int> prod = D * A;
+    EXPECT_EQ(prod.get(0, 1), 2);
+    EXPECT_EQ(prod.get(1, 2), 3);
+
+    // Diagonal * Vector = Vector
+    int v_data[] = {10, 10, 10};
+    Vector<int> vec(v_data, 3);
+    Vector<int> v_res = D * vec;
+    EXPECT_EQ(v_res[0], 20); // 10 * 2
+    EXPECT_EQ(v_res[1], 30); // 10 * 3
 }

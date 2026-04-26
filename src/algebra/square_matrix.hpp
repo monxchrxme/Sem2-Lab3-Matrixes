@@ -43,6 +43,23 @@ public:
     SquareMatrix<T>* add(const IMatrix<T>& other) const override;
     SquareMatrix<T>* mult(const T& value) const override;
     SquareMatrix<T>* mult(const IMatrix<T>& other) const override;
+
+    // for visibility of all methods from base class Matrix
+    using Matrix<T>::operator*;
+
+    // in-place operations
+    SquareMatrix<T>& operator+=(const IMatrix<T>& other);
+    SquareMatrix<T>& operator-=(const IMatrix<T>& other);
+    SquareMatrix<T>& operator*=(const T& scalar);
+
+    // math operations
+    SquareMatrix<T> operator+(const IMatrix<T>& other) const;
+    SquareMatrix<T> operator-(const IMatrix<T>& other) const;
+    SquareMatrix<T> operator*(const T& scalar) const;
+    SquareMatrix<T> operator*(const IMatrix<T>& other) const;
 };
+
+template <typename T>
+SquareMatrix<T> operator*(const T& scalar, const SquareMatrix<T>& m);
 
 #include "square_matrix.tpp"

@@ -1,5 +1,4 @@
 #pragma once
-#include "diagonal_matrix.hpp"
 
 // Constructors
 
@@ -140,6 +139,126 @@ SquareMatrix<T>* DiagonalMatrix<T>::mult(const IMatrix<T>& other) const {
         }
     }
     return result;
+}
+
+template <typename T>
+DiagonalMatrix<T>& DiagonalMatrix<T>::operator+=(const IMatrix<T>& other) {
+    if (m_size != other.get_rows() || m_size != other.get_cols()) {
+        throw std::invalid_argument("DiagonalMatrix::operator+=: Dimensions mismatch");
+    }
+
+    // FAST PATH: If the second matrix is ​​also diagonal, we operate in O(N) time
+    if (auto* diag_other = dynamic_cast<const DiagonalMatrix<T>*>(&other)) {
+        for (int i = 0; i < m_size; ++i) {
+            m_data.set(i, m_data.get(i) + diag_other->m_data.get(i));
+        }
+    } 
+    // SLOW PATH: If the matrix is ​​standard, we check all elements in O(N^2) time
+    else {
+        for (int i = 0; i < m_size; ++i) {
+            for (int j = 0; j < m_size; ++j) {
+                this->set(i, j, this->get(i, j) + other.get(i, j));
+            }
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+DiagonalMatrix<T>& DiagonalMatrix<T>::operator-=(const IMatrix<T>& other) {
+    if (m_size != other.get_rows() || m_size != other.get_cols()) {
+        throw std::invalid_argument("DiagonalMatrix::operator-=: Dimensions mismatch");
+    }
+
+    if (auto* diag_other = dynamic_cast<const DiagonalMatrix<T>*>(&other)) {
+        for (int i = 0; i < m_size; ++i) {
+            m_data.set(i, m_data.get(i) - diag_other->m_data.get(i));
+        }
+    } else {
+        for (int i = 0; i < m_size; ++i) {
+            for (int j = 0; j < m_size; ++j) {
+                this->set(i, j, this->get(i, j) - other.get(i, j));
+            }
+        }
+    }
+    return *this;
+}
+
+template <typename T>
+DiagonalMatrix<T>& DiagonalMatrix<T>::operator*=(const T& scalar) {
+    for (int i = 0; i < m_size; ++i) {
+        m_data.set(i, m_data.get(i) * scalar);
+    }
+    return *this;
+}
+
+template <typename T>
+SquareMatrix<T> DiagonalMatrix<T>::operator+(const IMatrix<T>& other) const {
+    if (m_size != other.get_rows() || m_size != other.get_cols()) {
+        throw std::invalid_argument("DiagonalMatrix::operator+: Dimensions mismatch");
+    }
+    SquareMatrix<T> result(m_size); 
+    for (int i = 0; i < m_size; ++i) {
+        for (int j = 0; j < m_size; ++j) {
+            result.set(i, j, this->get(i, j) + other.get(i, j));
+        }
+    }
+    return result;
+}
+
+template <typename T>
+SquareMatrix<T> DiagonalMatrix<T>::operator-(const IMatrix<T>& other) const {
+    if (m_size != other.get_rows() || m_size != other.get_cols()) {
+        throw std::invalid_argument("DiagonalMatrix::operator-: Dimensions mismatch");
+    }
+    SquareMatrix<T> result(m_size);
+    for (int i = 0; i < m_size; ++i) {
+        for (int j = 0; j < m_size; ++j) {
+            result.set(i, j, this->get(i, j) - other.get(i, j));
+        }
+    }
+    return result;
+}
+
+template <typename T>
+DiagonalMatrix<T> DiagonalMatrix<T>::operator*(const T& scalar) const {
+    DiagonalMatrix<T> result(*this);
+    result *= scalar;
+    return result;
+}
+
+template <typename T>
+SquareMatrix<T> DiagonalMatrix<T>::operator*(const IMatrix<T>& other) const {
+    if (m_size != other.get_rows()) {
+        throw std::invalid_argument("DiagonalMatrix::operator*: Inner dimensions must agree");
+    }
+    int other_cols = other.get_cols();
+    SquareMatrix<T> result(m_size, other_cols);
+
+    for (int i = 0; i < m_size; ++i) {
+        T diag_val = m_data.get(i);
+        for (int j = 0; j < other_cols; ++j) {
+            result.set(i, j, diag_val * other.get(i, j));
+        }
+    }
+    return result;
+}
+
+template <typename T>
+Vector<T> DiagonalMatrix<T>::operator*(const Vector<T>& v) const {
+    if (m_size != v.get_size()) {
+        throw std::invalid_argument("DiagonalMatrix-Vector multiplication: Dimensions mismatch");
+    }
+    Vector<T> result(m_size);
+    for (int i = 0; i < m_size; ++i) {
+        result.set(i, m_data.get(i) * v.get(i));
+    }
+    return result;
+}
+
+template <typename T>
+DiagonalMatrix<T> operator*(const T& scalar, const DiagonalMatrix<T>& m) {
+    return m * scalar;
 }
 
 template <typename T>

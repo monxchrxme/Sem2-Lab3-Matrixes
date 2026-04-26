@@ -1,5 +1,4 @@
 #pragma once
-#include "system_of_equations.hpp"
 
 #include <stdexcept>
 #include <random>

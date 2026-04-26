@@ -140,10 +140,106 @@ TEST(MatrixTest, CopyAndMoveSemantics) {
     EXPECT_EQ(original.get(0, 0), 42);
     EXPECT_EQ(copy.get(0, 0), 99);
 
-    // Перемещение
     Matrix<int> moved = std::move(original);
     EXPECT_EQ(moved.get_rows(), 2);
     EXPECT_EQ(moved.get(1, 1), 42);
     // After moving, the original should not point to the old data (DynamicArray behavior)
     EXPECT_EQ(original.get_rows(), 0);
+}
+
+// In-place Operators Testing (+=, -=, *=)
+TEST(MatrixTest, InPlaceOperators) {
+    int d1[] = {1, 2, 3, 4};
+    int d2[] = {5, 6, 7, 8};
+    Matrix<int> m1(d1, 2, 2);
+    Matrix<int> m2(d2, 2, 2);
+
+    // Testing +=
+    m1 += m2;
+    EXPECT_EQ(m1.get(0, 0), 6);
+    EXPECT_EQ(m1.get(1, 1), 12);
+
+    // Testing -=
+    m1 -= m2;
+    EXPECT_EQ(m1.get(0, 0), 1); 
+    EXPECT_EQ(m1.get(1, 1), 4);
+
+    // Testing *= (Scalar)
+    m1 *= 10;
+    EXPECT_EQ(m1.get(0, 0), 10);
+    EXPECT_EQ(m1.get(1, 1), 40);
+
+    // Testing chaining 
+    m1 += m2; 
+    m1 -= m2; 
+    EXPECT_EQ(m1.get(0, 0), 10); 
+
+    // Exception check
+    Matrix<int> m_wrong(3, 3);
+    EXPECT_THROW(m1 += m_wrong, std::invalid_argument);
+    EXPECT_THROW(m1 -= m_wrong, std::invalid_argument);
+}
+
+// Binary Arithmetic Operators (+, -, * scalar)
+TEST(MatrixTest, BinaryOperators) {
+    int d1[] = {10, 20, 30, 40};
+    int d2[] = {1, 2, 3, 4};
+    Matrix<int> m1(d1, 2, 2);
+    Matrix<int> m2(d2, 2, 2);
+
+    // Testing Operator +
+    Matrix<int> sum = m1 + m2;
+    EXPECT_EQ(sum.get(0, 0), 11);
+    EXPECT_EQ(sum.get(1, 1), 44);
+    EXPECT_EQ(m1.get(0, 0), 10); 
+
+    // Testing Operator -
+    Matrix<int> diff = m1 - m2;
+    EXPECT_EQ(diff.get(0, 1), 18);
+    EXPECT_EQ(diff.get(1, 0), 27);
+
+    // Testing Scalar Multiplication (Right and Left)
+    Matrix<int> scaled_right = m1 * 2;
+    Matrix<int> scaled_left = 3 * m1;
+    
+    EXPECT_EQ(scaled_right.get(0, 0), 20);
+    EXPECT_EQ(scaled_left.get(0, 0), 30);
+}
+
+
+// Matrix and Vector Multiplication Operators (*)
+TEST(MatrixTest, MultiplicationOperators) {
+    // 2x3 Matrix
+    int dataA[] = {1, 2, 3,
+                   4, 5, 6};
+    // 3x2 Matrix
+    int dataB[] = {7, 8,
+                   9, 10,
+                   11, 12};
+    Matrix<int> A(dataA, 2, 3);
+    Matrix<int> B(dataB, 3, 2);
+
+    // Matrix * Matrix
+    Matrix<int> C = A * B;
+    EXPECT_EQ(C.get_rows(), 2);
+    EXPECT_EQ(C.get_cols(), 2);
+    EXPECT_EQ(C.get(0, 0), 58);  // 1*7 + 2*9 + 3*11
+    EXPECT_EQ(C.get(1, 1), 154); // 4*8 + 5*10 + 6*12
+
+    // Exception: Inner dimensions mismatch
+    Matrix<int> wrong_dim(4, 4);
+    EXPECT_THROW(A * wrong_dim, std::invalid_argument);
+
+    // Matrix * Vector
+    int data_vec[] = {1, 0, -1};
+    Vector<int> v(data_vec, 3);
+    
+    Vector<int> result_vec = A * v;
+    EXPECT_EQ(result_vec.get_size(), 2);
+    EXPECT_EQ(result_vec[0], -2); // 1*1 + 2*0 + 3*(-1)
+    EXPECT_EQ(result_vec[1], -2); // 4*1 + 5*0 + 6*(-1)
+
+    // Exception: Matrix-Vector dimension mismatch
+    Vector<int> wrong_vec(2);
+    EXPECT_THROW(A * wrong_vec, std::invalid_argument);
 }

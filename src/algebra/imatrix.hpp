@@ -24,9 +24,10 @@ public:
     virtual void set(int i, int j, const T &value) = 0;
 
     // math operations
-    virtual IMatrix<T>* add(const IMatrix<T> &other) const = 0;    // returns a heap-allocated object, must be deleted by user
-    virtual IMatrix<T>* mult_scalar(const T &value) const = 0;     // returns a heap-allocated object, must be deleted by user
-    virtual IMatrix<T>* mult(const IMatrix<T> &other) const = 0;   // returns a heap-allocated object, must be deleted by user
+    // returns a heap-allocated object, must be deleted by user
+    virtual IMatrix<T>* add(const IMatrix<T> &other) const = 0;    
+    virtual IMatrix<T>* mult(const T &value) const = 0;            // mult_scalar function
+    virtual IMatrix<T>* mult(const IMatrix<T> &other) const = 0;   // mult_matrix function
 
     // Frobenius's norm calculating
     virtual double norm() const = 0;

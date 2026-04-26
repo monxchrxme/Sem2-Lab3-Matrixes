@@ -51,7 +51,7 @@ TEST(SparseMatrixTest, ScalarMultiplication) {
     m.set(0, 1, 2.5);
     m.set(1, 0, -1.0);
 
-    IMatrix<double>* res = m.mult_scalar(2.0);
+    IMatrix<double>* res = m.mult(2.0);
     auto* sparse_res = dynamic_cast<SparseMatrix<double>*>(res);
 
     ASSERT_NE(sparse_res, nullptr);
@@ -59,7 +59,7 @@ TEST(SparseMatrixTest, ScalarMultiplication) {
     EXPECT_DOUBLE_EQ(sparse_res->get(1, 0), -2.0);
     EXPECT_EQ(sparse_res->get_non_zero_count(), 2);
 
-    IMatrix<double>* res_zero = m.mult_scalar(0.0);
+    IMatrix<double>* res_zero = m.mult(0.0);
     auto* sparse_zero = dynamic_cast<SparseMatrix<double>*>(res_zero);
     EXPECT_EQ(sparse_zero->get_non_zero_count(), 0);
 

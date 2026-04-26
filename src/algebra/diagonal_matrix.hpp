@@ -37,7 +37,7 @@ public:
     void set(int i, int j, const T& value) override;
 
     SquareMatrix<T>* add(const IMatrix<T>& other) const override;
-    DiagonalMatrix<T>* mult_scalar(const T& value) const override;
+    DiagonalMatrix<T>* mult(const T& value) const override;
     SquareMatrix<T>* mult(const IMatrix<T>& other) const override;
 
     double norm() const override;

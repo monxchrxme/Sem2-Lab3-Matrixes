@@ -14,7 +14,7 @@ int Matrix<T>::checked_size(int rows, int cols) {
 }
 
 template <typename T>
-bool Matrix<T>::in_bounds(int i, int j) const noexcept {
+bool Matrix<T>::check_index(int i, int j) const noexcept {
     return i >= 0 && i < m_rows && j >= 0 && j < m_cols;
 }
 
@@ -96,7 +96,7 @@ int Matrix<T>::get_cols() const {
 
 template <typename T>
 const T& Matrix<T>::get(int i, int j) const {
-    if (!in_bounds(i, j)) {
+    if (!check_index(i, j)) {
         throw IndexOutOfRange("Matrix::get: Index out of bounds");
     }
     return m_data.get(get_index(i, j));
@@ -106,7 +106,7 @@ const T& Matrix<T>::get(int i, int j) const {
 
 template <typename T>
 void Matrix<T>::set(int i, int j, const T& value) {
-    if (!in_bounds(i, j)) {
+    if (!check_index(i, j)) {
         throw IndexOutOfRange("Matrix::set: Index out of bounds");
     }
     m_data.set(get_index(i, j), value);
@@ -129,7 +129,7 @@ Matrix<T>* Matrix<T>::add(const IMatrix<T>& other) const {
 }
 
 template <typename T>
-Matrix<T>* Matrix<T>::mult_scalar(const T& value) const {
+Matrix<T>* Matrix<T>::mult(const T& value) const {
     auto* result = new Matrix<T>(m_rows, m_cols);
     for (int i = 0; i < m_rows * m_cols; ++i) {
         result->m_data.set(i, m_data.get(i) * value);

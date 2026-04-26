@@ -1,6 +1,9 @@
 #pragma once
 #include "system_of_equations.hpp"
 
+#include <stdexcept>
+#include <random>
+
 template <typename T>
 SystemOfEquations<T>::SystemOfEquations(const SquareMatrix<T>& matrix, const Vector<T>& rhs) :
     A(matrix),

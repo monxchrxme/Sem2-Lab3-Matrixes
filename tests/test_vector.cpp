@@ -30,11 +30,11 @@ TEST(VectorTest, ConstructorsAndAccess) {
 TEST(VectorTest, OutOfBounds) {
     Vector<int> v(3);
 
-    EXPECT_THROW(v.get(-1), IndexOutOfRange);
+    EXPECT_THROW(static_cast<void>(v.get(-1)), IndexOutOfRange);
     EXPECT_THROW(v.set(-1, 100), IndexOutOfRange);
     EXPECT_THROW(v[-1], IndexOutOfRange);
 
-    EXPECT_THROW(v.get(3), IndexOutOfRange);
+    EXPECT_THROW(static_cast<void>(v.get(3)), IndexOutOfRange);
     EXPECT_THROW(v.set(5, 100), IndexOutOfRange);
 }
 

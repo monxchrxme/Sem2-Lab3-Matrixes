@@ -57,7 +57,7 @@ TEST(DiagonalMatrixTest, MathOperations) {
     DiagonalMatrix<int> diag2(d2, 3);
 
     // 1. Scalar Multiplication (returns DiagonalMatrix)
-    DiagonalMatrix<int>* scaled = diag1.mult_scalar(10);
+    DiagonalMatrix<int>* scaled = diag1.mult(10);
     EXPECT_EQ(scaled->get(0, 0), 10);
     EXPECT_EQ(scaled->get(2, 2), 30);
     EXPECT_EQ(scaled->get(0, 1), 0);

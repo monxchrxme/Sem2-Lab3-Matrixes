@@ -80,7 +80,7 @@ TriangleType TriangularMatrix<T>::get_type() const {
 
 template <typename T>
 const T& TriangularMatrix<T>::get(int i, int j) const {
-    if (!in_bounds(i, j)) {
+    if (!check_index(i, j)) {
         throw IndexOutOfRange("TriangularMatrix::get: Index out of bounds");
     }
 
@@ -92,7 +92,7 @@ const T& TriangularMatrix<T>::get(int i, int j) const {
 
 template <typename T>
 void TriangularMatrix<T>::set(int i, int j, const T& value) {
-    if (!in_bounds(i, j)) {
+    if (!check_index(i, j)) {
         throw IndexOutOfRange("TriangularMatrix::set: Index out of bounds");
     }
 
@@ -122,7 +122,7 @@ SquareMatrix<T>* TriangularMatrix<T>::add(const IMatrix<T>& other) const {
 }
 
 template <typename T>
-TriangularMatrix<T>* TriangularMatrix<T>::mult_scalar(const T& value) const {
+TriangularMatrix<T>* TriangularMatrix<T>::mult(const T& value) const {
     auto* result = new TriangularMatrix<T>(m_size, m_type);
     for (int i = 0; i < m_data.get_size(); ++i) {
         result->m_data.set(i, m_data.get(i) * value);
@@ -189,7 +189,7 @@ T TriangularMatrix<T>::determinant() const {
 }
 
 template <typename T>
-bool TriangularMatrix<T>::in_bounds(int i, int j) const noexcept {
+bool TriangularMatrix<T>::check_index(int i, int j) const noexcept {
     return i >= 0 && i < m_size && j >= 0 && j < m_size;
 }
 

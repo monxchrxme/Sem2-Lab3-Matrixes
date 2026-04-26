@@ -7,13 +7,9 @@
 TEST(SquareMatrixTest, ConstructorsAndSize) {
     SquareMatrix<int> empty;
     EXPECT_EQ(empty.get_size(), 0);
-    EXPECT_EQ(empty.get_rows(), 0);
-    EXPECT_EQ(empty.get_cols(), 0);
 
     SquareMatrix<int> m1(3);
     EXPECT_EQ(m1.get_size(), 3);
-    EXPECT_EQ(m1.get_rows(), 3);
-    EXPECT_EQ(m1.get_cols(), 3);
     EXPECT_EQ(m1.get(2, 2), 0);
 
     SquareMatrix<double> m2(2, 3.14);
@@ -47,7 +43,7 @@ TEST(SquareMatrixTest, MathOverrides) {
     EXPECT_THROW(sq1.add(wrong_sq), std::invalid_argument);
 
     // 2. Scalar Multiplication
-    SquareMatrix<int>* scaled = sq1.mult_scalar(10);
+    SquareMatrix<int>* scaled = sq1.mult(10);
     EXPECT_EQ(scaled->get_size(), 2);
     EXPECT_EQ(scaled->get(0, 1), 20);
     delete scaled;

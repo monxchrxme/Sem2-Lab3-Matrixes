@@ -6,9 +6,8 @@
 template <typename T>
 class SquareMatrix : public Matrix<T> {
 private: 
-    //TODO: боремся с прямоугольностью для квадртаных матриц) 
-    [[nodiscard]] int get_rows() const override { return Matrix::get_rows(); }
-    [[nodiscard]] int get_cols() const override { return Matrix::get_cols(); }
+    [[nodiscard]] int get_rows() const override { return Matrix<T>::get_rows(); }
+    [[nodiscard]] int get_cols() const override { return Matrix<T>::get_cols(); }
     
 public:
     // Constructors (strictly 1 size, to guarantee a square)
@@ -42,7 +41,7 @@ public:
     SquareMatrix<T>* clone() const override;
 
     SquareMatrix<T>* add(const IMatrix<T>& other) const override;
-    SquareMatrix<T>* mult_scalar(const T& value) const override;
+    SquareMatrix<T>* mult(const T& value) const override;
     SquareMatrix<T>* mult(const IMatrix<T>& other) const override;
 };
 

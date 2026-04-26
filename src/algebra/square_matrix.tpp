@@ -86,7 +86,7 @@ SquareMatrix<T>* SquareMatrix<T>::add(const IMatrix<T>& other) const {
 }
 
 template <typename T>
-SquareMatrix<T>* SquareMatrix<T>::mult_scalar(const T& value) const {
+SquareMatrix<T>* SquareMatrix<T>::mult(const T& value) const {
     int n = get_size();
     auto* result = new SquareMatrix<T>(n);
     for (int i = 0; i < n; ++i) {

@@ -22,7 +22,7 @@ int SparseMatrix<T>::get_cols() const {
 }
 
 template <typename T>
-bool SparseMatrix<T>::in_bounds(int i, int j) const noexcept {
+bool SparseMatrix<T>::check_index(int i, int j) const noexcept {
     return (i >= 0 && i < m_rows && j >= 0 && j < m_cols);
 }
 
@@ -55,7 +55,7 @@ int SparseMatrix<T>::find_index(int i, int j) const {
 
 template <typename T>
 const T& SparseMatrix<T>::get(int i, int j) const {
-    if (!in_bounds(i, j)) {
+    if (!check_index(i, j)) {
         throw std::invalid_argument("SparseMatrix::get: index out of bounds");
     }
     
@@ -68,7 +68,7 @@ const T& SparseMatrix<T>::get(int i, int j) const {
 
 template <typename T>
 void SparseMatrix<T>::set(int i, int j, const T& value) {
-    if (!in_bounds(i, j)) {
+    if (!check_index(i, j)) {
         throw std::invalid_argument("SparseMatrix::set: index out of bounds");
     }
 
@@ -156,7 +156,7 @@ SparseMatrix<T>* SparseMatrix<T>::add(const IMatrix<T>& other) const {
 }
 
 template <typename T>
-SparseMatrix<T>* SparseMatrix<T>::mult_scalar(const T& value) const {
+SparseMatrix<T>* SparseMatrix<T>::mult(const T& value) const {
     auto* result = new SparseMatrix<T>(m_rows, m_cols);
     if (value == T{}) return result; 
 

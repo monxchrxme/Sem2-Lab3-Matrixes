@@ -5,9 +5,6 @@
 #include "vector.hpp"
 #include "../lab2/memory/dynamic_array.hpp"
 #include "../types/math.hpp"
-#include <stdexcept>
-#include <random>
-//TODO: include которые не используются в hpp перенести в tpp 
 
 template <typename T>
 class SystemOfEquations {

@@ -43,7 +43,8 @@ public:
     // Euclidean norm (vector length)
     double norm() const;
 };
-//TODO: можно использовать % для скалярного произведения
+//TODO: можно использовать % для скалярного произведения 
+//TODO: добавить векторное произведение? 
 // Global operator for a scalar on the left (scalar * vector)
 template <typename T>
 Vector<T> operator*(const T& scalar, const Vector<T>& v);

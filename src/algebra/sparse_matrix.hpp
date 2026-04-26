@@ -43,10 +43,10 @@ public:
     SparseMatrix<T>* clone() const override;
 
     SparseMatrix<T>* add(const IMatrix<T>& other) const override;
-    SparseMatrix<T>* mult_scalar(const T& value) const override;
+    SparseMatrix<T>* mult(const T& value) const override;
     SparseMatrix<T>* mult(const IMatrix<T>& other) const override;
     
-    bool in_bounds(int i, int j) const noexcept;
+    bool check_index(int i, int j) const noexcept;
 
     int get_non_zero_count() const {
         return m_data.get_size();

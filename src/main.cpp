@@ -262,7 +262,7 @@ static void matrix_ops(Seq<T>& seq, int idx) {
             case 6: {
                 T sc = read_value<T>(" Scalar: ");
                 try {
-                    IMatrix<T>* res = m->mult_scalar(sc);
+                    IMatrix<T>* res = m->mult(sc);
                     seq.append(res);
                     std::cout << " Result saved.\n";
                 } catch (const std::exception& e) {

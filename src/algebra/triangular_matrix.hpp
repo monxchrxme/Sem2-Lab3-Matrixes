@@ -21,7 +21,7 @@ private:
 
     inline static const T ZERO{};
 
-    bool in_bounds(int i, int j) const noexcept;
+    bool check_index(int i, int j) const noexcept;
     bool in_structure(int i, int j) const noexcept; // Does it lie in the significant half?
     int flat_index(int i, int j) const noexcept;
 
@@ -50,7 +50,7 @@ public:
 
     // math
     SquareMatrix<T>* add(const IMatrix<T>& other) const override;
-    TriangularMatrix<T>* mult_scalar(const T& value) const override;
+    TriangularMatrix<T>* mult(const T& value) const override;
     SquareMatrix<T>* mult(const IMatrix<T>& other) const override;
 
     double norm() const override;

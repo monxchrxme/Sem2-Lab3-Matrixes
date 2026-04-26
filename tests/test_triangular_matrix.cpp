@@ -88,7 +88,7 @@ TEST(TriangularMatrixTest, AdditionAndScalar) {
     TriangularMatrix<int> U2(2, 3, TriangleType::Upper); // [3 3; 0 3]
 
     // Scalar Multiplication (returns TriangularMatrix)
-    TriangularMatrix<int>* scaled = U1.mult_scalar(10);
+    TriangularMatrix<int>* scaled = U1.mult(10);
     EXPECT_EQ(scaled->get(0, 1), 20);
     EXPECT_EQ(scaled->get(1, 0), 0);
     EXPECT_EQ(scaled->get_type(), TriangleType::Upper);

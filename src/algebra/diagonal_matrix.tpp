@@ -117,7 +117,7 @@ SquareMatrix<T>* DiagonalMatrix<T>::add(const IMatrix<T>& other) const {
 }
 
 template <typename T>
-DiagonalMatrix<T>* DiagonalMatrix<T>::mult_scalar(const T& value) const {
+DiagonalMatrix<T>* DiagonalMatrix<T>::mult(const T& value) const {
     auto* result = new DiagonalMatrix<T>(m_size);
     for (int i = 0; i < m_size; ++i) {
         result->m_data.set(i, m_data.get(i) * value);

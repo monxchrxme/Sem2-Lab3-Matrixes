@@ -52,7 +52,7 @@ TEST(MatrixTest, AdditionAndScalarMult) {
     EXPECT_THROW(m1.add(m_wrong), std::invalid_argument);
 
     // Scalar Multiplication
-    Matrix<int>* scaled = m1.mult_scalar(10);
+    Matrix<int>* scaled = m1.mult(10);
     EXPECT_EQ(scaled->get(0, 1), 20);
     EXPECT_EQ(scaled->get(1, 0), 30);
     delete scaled;
